@@ -1,8 +1,7 @@
 import { createApp } from 'vue'
-import App from '@/App.vue'
-import router from '@/router/index.js'
+import App from './App.vue'
+import router from './router'
 
-import 'jquery/dist/jquery.min'
-import 'popper.js/dist/popper.min'
+import '@/axios'
 
 createApp(App).use(router).mount('#app')

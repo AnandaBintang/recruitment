@@ -14,10 +14,10 @@
                         </div>
                     </h6>
                     <div class="dropdown-divider"></div>
-                    <!-- <a class="dropdown-item" href="#!">
+                    <router-link to="/account" class="dropdown-item">
                         <div class="dropdown-item-icon"><i data-feather="settings"></i></div>
                         Account
-                    </a> -->
+                    </router-link>
                     <a class="dropdown-item" href="#" @click.prevent="logout">
                         <div class="dropdown-item-icon"><i data-feather="log-out"></i></div>
                         Logout
@@ -36,55 +36,61 @@ import Swal from 'sweetalert2'
 export default {
     data: function() {
         return {
-            previewImage: 'http://recruitment.test/images/default.png',
-            data: JSON.parse(localStorage.getItem('user'))
+            data: '',
+            previewImage: 'http://recruitment.test/images/default.jpg',
         }
     },
-    created() {
+    async created() {
         let checkData = null
 
-        axios.get('http://recruitment.test/api/profile/' + this.data.id).then(res => {
-            checkData = res.data.data
+        const response = await axios.get('user')
+        this.data = response.data.data
+
+        try {
+            const profile = await axios.get('profile/' + this.data.id);
+            checkData = profile.data.data
 
             if(checkData) {
                 this.previewImage = 'http://recruitment.test/images/' + checkData.image
             } else {
                 return
             }
-        })
+        } catch {
+            return
+        }
     },
     methods: {
         logout() {
             Swal.fire({
-                title: 'Anda yakin ingin logout?',
-                icon: 'warning',
-                showCancelButton: true,
-                cancelButtonColor: '#3085d6',
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'Logout'
+                    title: 'Anda yakin ingin logout?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Logout'
                 }).then((result) => {
-                if (result.isConfirmed) {
-                    let token = localStorage.getItem('token')
-                    axios.post('http://recruitment.test/api/auth/logout', {}, {
-                        headers: {
-                            'Authorization': `Bearer ${token}` 
-                        }
-                    }).then(() => {
-                        localStorage.removeItem('user')
-                        localStorage.removeItem('level')
-                        localStorage.removeItem('token')
-
-                        router.push({
-                            name: 'Home',
+                    if (result.isConfirmed) {
+                        let token = localStorage.getItem('token')
+                        axios.post('auth/logout', {}, {
+                            headers: {
+                                'Authorization': `Bearer ${token}` 
+                            }
+                        }).then(() => {
+                            Swal.fire({
+                            icon: "success",
+                            title: "Logout!",
+                            text: "Kamu berhasil logout!",
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    localStorage.setItem('reload', '1')
+                                    localStorage.removeItem('token')
+                                    router.push({
+                                        name: 'Home',
+                                    })
+                                }
+                            })
                         })
-
-                        Swal.fire(
-                            'Logout!',
-                            'Kamu Telah Logout.',
-                            'success'
-                        )
-                    })
-                }
+                    }
             });
         }
     },

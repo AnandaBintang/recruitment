@@ -1,11 +1,11 @@
 <template>
     <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
         <div class="container px-4 px-lg-5">
-            <a class="navbar-brand" href="#">E-Recruitment</a>
+            <a class="navbar-brand" href="#">STARBS</a>
             <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ms-auto my-2 my-lg-0">
-                    <li v-if="data" class="nav-item text-white"><router-link to="/dashboard" class="nav-link">{{ data.email }}</router-link></li>
+                    <li v-if="data" class="nav-item text-white"><router-link to="/dashboard" class="nav-link">{{ data }}</router-link></li>
                     <li v-else class="nav-item"><router-link to="/login" class="nav-link">Login</router-link></li>
                 </ul>
             </div>
@@ -20,7 +20,15 @@ import Swal from 'sweetalert2'
 export default {
     data: function() {
         return {
-            data: JSON.parse(localStorage.getItem('user'))
+            data: ''
+        }
+    },
+    async created() {
+        try {
+            const response = await axios.get('user')
+            this.data = response.data.data.email
+        } catch {
+            console.clear()
         }
     },
     methods: {

@@ -4,7 +4,7 @@
         <div class="container px-4 px-lg-5 h-100">
             <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
                 <div class="col-lg-8 align-self-end">
-                    <h1 class="text-white font-weight-bold">E-Recruitment</h1>
+                    <h1 class="text-white font-weight-bold">STARBS HOUSE</h1>
                     <hr class="divider" />
                 </div>
                 <div class="col-lg-8 align-self-baseline">
@@ -20,19 +20,27 @@
 <script>
 import '@/load/home';
 
-import router from '@/router'
+import axios from 'axios'
 import TheNavbar from '@/components/home/TheNavbar.vue';
 
 export default {
     data: function () {
         return {
-            data: JSON.parse(localStorage.getItem('user')),
+            data: '',
         }
     },
-    beforeUnmount() {
-        let reload = true
-        if(reload) {
-            router.go()
+    mounted() {
+        if(localStorage.getItem('reload')) {
+            this.$router.go()
+            localStorage.removeItem('reload');
+        }
+    },
+    async created() {
+        try {
+            const response = await axios.get('user')
+            this.data = response.data.data
+        } catch {
+            console.clear()
         }
     },
     components: { TheNavbar }

@@ -26,7 +26,7 @@
                             </div>
                             <div class="col-xl-8">
                                 <div class="card mb-4">
-                                    <div class="card-header">Account Details</div>
+                                    <div class="card-header">Biodata</div>
                                     <div class="card-body">
                                         <div class="row gx-3 mb-3">
                                             <div class="col-md-6">
@@ -43,6 +43,18 @@
                                             <input class="form-control" id="inputBirthday" type="date" v-model="birthday" placeholder="Enter your Birthday"/>
                                         </div>
                                         <div class="mb-3">
+                                            <label class="small mb-1" for="inputBirthday">Gender</label>
+                                            <br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="gender" id="laki" value="L" v-model="gender">
+                                                <label class="form-check-label" for="laki">Laki-Laki</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="gender" id="perempuan" value="P" v-model="gender">
+                                                <label class="form-check-label" for="perempuan">Perempuan</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
                                             <label class="small mb-1" for="inputAddress">Address</label>
                                             <textarea class="form-control" id="inputAddress" cols="30" rows="10" v-model="address" placeholder="Enter your Address"></textarea>
                                         </div>
@@ -50,7 +62,7 @@
                                             <label class="small mb-1" for="inputCv">CV</label>
                                             <input class="form-control" id="inputCv" type="file" @change="onChangePdf" accept="application/pdf" placeholder="Enter your CV"/>
                                         </div>
-                                        <button class="btn btn-primary" type="submit">Save changes</button>
+                                        <button class="btn btn-primary float-end" type="submit">Save changes</button>
                                     </div>
                                 </div>
                             </div>
@@ -76,36 +88,52 @@ import DashboardFooter from '@/components/dashboard/DashboardFooter.vue';
 export default {
     data() {
         return{
+            data: '',
             firstName: '',
             lastName: '',
             birthday: '',
+            gender: '',
             address: '',
             photo: '',
             pdf: '',
-            previewImage: 'http://recruitment.test/images/default.png',
+            previewImage: 'http://recruitment.test/images/default.jpg',
         }
     },
-    mounted() {
-        let userId = JSON.parse(localStorage.getItem('user'))
-        let data = null
+    async created() {
+        Swal.fire({
+            title: 'Loading Data!',
+            didOpen: () => {
+                Swal.showLoading();
+            },
+        });
+        
+        let checkData = null
 
-        axios.get('http://recruitment.test/api/profile/' + userId.id).then(res => {
-            data = res.data.data
+        const response = await axios.get('user')
+        this.data = response.data.data
 
-            if(data) {
-                this.firstName = data.first_name
-                this.lastName = data.last_name
-                this.birthday = data.birthday
-                this.address = data.address
-                this.previewImage = 'http://recruitment.test/images/' + data.image
+        try {
+            const profile = await axios.get('profile/' + this.data.id)
+            checkData = profile.data.data
 
-                document.getElementById('cv').setAttribute('hidden', 'hidden')
-
-                data = data.id
-            } else {
-                return
+            if(checkData) {
+                this.firstName = checkData.first_name
+                this.lastName = checkData.last_name
+                this.birthday = checkData.birthday
+                this.gender = checkData.gender
+                this.address = checkData.address
+                this.previewImage = 'http://recruitment.test/images/' + checkData.image
             }
-        })
+
+            Swal.close();
+        } catch {
+            Swal.close();
+            Swal.fire({
+                icon: "error",
+                title: "Error!",
+                text: "Server error, silahkan muat ulang website!",
+            })
+        }
     },
     props: ['id'],
     methods:{
@@ -119,65 +147,89 @@ export default {
         onChangePdf(e) {
             this.pdf = e.target.files[0];
         },
-        input() {
-            let userId = JSON.parse(localStorage.getItem('user'))
-            let data = null
+        async input() {
+            let checkData = null
 
-            axios.get('http://recruitment.test/api/profile/' + userId.id).then(res => {
-                data = res.data.data
+            try {
+                const profile = await axios.get('profile/' + this.data.id)
 
-                if(data) {
-                    Swal.fire(
-                    'Warning',
-                    'Anda sudah memasukkan data diri!',
-                    'warning'
-                    )
-                    // axios.put('http://recruitment.test/api/profile/' + data, {
-                    //     first_name: this.firstName,
-                    //     last_name: this.lastName,
-                    //     birthday: this.birthday,
-                    //     address: this.address,
-                    // }).then(() => {
-                    //     Swal.fire(
-                    //         'Success',
-                    //         'Success!',
-                    //         'success'
-                    //     )
-                    // }).catch(() => {
-                    //     Swal.fire(
-                    //         'Failed',
-                    //         'Failed!',
-                    //         'error'
-                    //     )
-                    // })
-                } else {
+                checkData = profile.data.data
+
+                if(checkData) {
                     let formData = new FormData()
 
-                    formData.append('id', userId.id)
+                    formData.append('id', this.data.id)
                     formData.append('firstName', this.firstName)
                     formData.append('lastName', this.lastName)
                     formData.append('birthday', this.birthday)
+                    formData.append('gender', this.gender)
+                    formData.append('address', this.address)
+
+                    if(this.photo) {
+                        formData.append('photo', this.photo)
+                    }
+                    if(this.pdf) {
+                        formData.append('cv', this.pdf)
+                    }
+                    
+                    try {
+                        const update = await axios.post('update-profile' ,formData)
+
+                        if(update) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Success!",
+                                text: "Update Profil Sukses!",
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    this.$router.go()
+                                }
+                            })
+                        }
+                    } catch {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Failed!",
+                            text: "Server error, silahkan muat ulang website!",
+                        })
+                    }
+                } else {
+                    let formData = new FormData()
+
+                    formData.append('id', this.data.id)
+                    formData.append('firstName', this.firstName)
+                    formData.append('lastName', this.lastName)
+                    formData.append('birthday', this.birthday)
+                    formData.append('gender', this.gender)
                     formData.append('address', this.address)
                     formData.append('photo', this.photo)
                     formData.append('cv', this.pdf)
 
-                    axios.post('http://recruitment.test/api/profile', formData)
-                        .then(() => {
-                            Swal.fire(
-                                'Success',
-                                'Success!',
-                                'success'
-                            )
-                            document.getElementById('cv').setAttribute('hidden', 'hidden')
-                        }).catch(() => {
-                            Swal.fire(
-                                'Failed',
-                                'Failed!',
-                                'error'
-                            )
-                        });
+                    try {
+                        const inputData = await axios.post('profile', formData)
+
+                        if(inputData) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Success!",
+                                text: "Profil berhasil dibuat!",
+                            })
+                        }
+                    } catch {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error!",
+                            text: "Server error, silahkan muat ulang website!",
+                        })
+                    }
                 }
-            })
+            } catch {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error!",
+                    text: "Server error, silahkan muat ulang website!",
+                })
+            }
         }
     },
     components: { DashboardNavbar, DashboardSidebar, DashboardFooter }

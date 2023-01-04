@@ -11,15 +11,12 @@
             <div class="row gx-4 gx-lg-5 justify-content-center mb-5">
                 <div class="col-lg-6">
                     <form id="contactForm" @submit.prevent="login">
-                        <!-- Name input-->
                         <div class="form-floating mb-3">
-                            <input class="form-control" id="username" type="text" placeholder="Masukkan Email" v-model="state.email"/>
-                            <span v-if="v$.email.$error"> {{ v$.email.$errors[0].$message }} </span>
+                            <input class="form-control" id="username" type="email" placeholder="Masukkan Email" v-model="email" required/>
                             <label for="name">Email</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input class="form-control" id="pass" type="password" placeholder="Masukkan Password" v-model="state.password"/>
-                            <span v-if="v$.password.$error"> {{ v$.password.$errors[0].$message }} </span>
+                            <input class="form-control" id="pass" type="password" placeholder="Masukkan Password" v-model="password" required/>
                             <label for="name">Password</label>
                         </div>
                         <div class="d-grid">
@@ -44,89 +41,52 @@
     import '@/load/home'
 
     import axios from 'axios'
+    import router from '@/router'
     import Swal from 'sweetalert2'
-    import useValidate from '@vuelidate/core'
-    import { useRouter } from 'vue-router'
-    import { reactive, computed } from 'vue'
-    import { required, minLength, email } from '@vuelidate/validators'
 
     export default {
         data() {
             return {
-                loading: false
-            }
-        },
-        setup() {
-            const router = useRouter()
-
-            let data = localStorage.getItem('token')
-
-            if(data) {
-                router.push({
-                    name: 'Dashboard'
-                })
-            }
-
-            const state = reactive({
                 email: '',
-                password: '',
-            })
-
-            const rules = computed(() => {
-                return {
-                    email: { required, email },
-                    password: { required , minLength: minLength(6)},
-                }
-            })
-            
-            function login() {
-                let email = state.email
-                let password = state.password
-
-                axios.post('http://recruitment.test/api/login', {
-                    email: email,
-                    password: password
-                }).then(res => {
-                    state.email= '',
-                    state.password= '',
-
-                    localStorage.setItem('user', JSON.stringify(res.data.user))
-                    localStorage.setItem('level', JSON.stringify(res.data.level))
-                    localStorage.setItem('token', res.data.content.access_token)
-
-                    if(JSON.stringify(res.data.user.level) == 1) {
-                        router.push({
-                            name: 'Adminboard',
-                        })
-                    } else {
-                        router.push({
-                            name: 'Dashboard',
-                        })
-                    }
-
-                    Swal.fire(
-                        'Success',
-                        'Login Success',
-                        'success'
-                    )
-                }).catch(() => {
-                    state.password= '',
-
-                    Swal.fire(
-                        'Failed',
-                        'Login Failed!',
-                        'error'
-                    )
+                password: ''
+            }
+        },
+        async mounted() {
+            if(localStorage.getItem('token')) {
+                router.push({
+                    name: 'Dashboard',
                 })
             }
-            
-            const v$ = useValidate(rules, state)
-            return { state, v$, login }
         },
-        validations() {
-            return {
-                user: { required },
-                password: { required },
+        methods: {
+            async login() {
+                try {
+                    const response = await axios.post('login', {
+                        email: this.email,
+                        password: this.password
+                    })
+
+                    Swal.fire({
+                        icon: "success",
+                        title: response.data.status,
+                        text: response.data.msg,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            localStorage.setItem('reload', '1')
+                            localStorage.setItem('token', response.data.content.access_token)
+
+                            router.push({
+                                name: 'Dashboard',
+                            })
+                        }
+                    })
+                } catch (e) {
+                    Swal.fire({
+                        icon: "error",
+                        title: e.response.data.status,
+                        text: e.response.data.msg,
+                    })
+                }
             }
         },
     }

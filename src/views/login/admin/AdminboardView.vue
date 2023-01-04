@@ -103,6 +103,12 @@ export default {
         DashboardNavbar,
         DashboardSidebar,
         DashboardFooter
+    },
+    mounted() {
+        if(localStorage.getItem('reload')) {
+            this.$router.go()
+            localStorage.removeItem('reload');
+        }
     }
 }
 </script>

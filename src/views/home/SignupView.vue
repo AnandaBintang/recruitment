@@ -10,26 +10,33 @@
             </div>
             <div class="row gx-4 gx-lg-5 justify-content-center mb-5">
                 <div class="col-lg-6">
-                    <form id="contactForm" @submit.prevent="store">
+                    <form id="contactForm" @submit.prevent="submitForm">
                         <div class="form-floating mb-3">
-                            <input class="form-control" id="name" type="text" placeholder="Masukkan Username atau Email" v-model="state.user"/>
-                            <span v-if="v$.user.$error"> {{ v$.user.$errors[0].$message }} </span>
+                            <input class="form-control" id="name" type="text" placeholder="Masukkan Username atau Email" v-model="username" required/>
                             <label for="name">Username</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input class="form-control" id="email" type="email" placeholder="name@example.com" v-model="state.email"/>
-                            <span v-if="v$.email.$error"> {{ v$.email.$errors[0].$message }} </span>
+                            <input class="form-control" id="email" type="email" placeholder="name@example.com" v-model="email" required/>
                             <label for="email">Email address</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input class="form-control" id="phone" type="number" pattern="(?=.*[0-9]).{10,}" placeholder="08123456789" v-model="state.phone"/>
-                            <span v-if="v$.phone.$error"> {{ v$.phone.$errors[0].$message }} </span>
+                            <MazPhoneNumberInput
+                                v-model="phone"
+                                fetch-country
+                                show-code-on-list
+                                color="info"
+                                :preferred-countries="['ID', 'FR', 'BE', 'DE', 'US', 'GB']"
+                                :ignored-countries="['AC']"
+                            />
                             <label for="phone">Phone number</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input class="form-control" id="pass" type="password" placeholder="Masukkan Password" v-model="state.password"/>
-                            <span v-if="v$.password.$error"> {{ v$.password.$errors[0].$message }} </span>
+                            <input class="form-control" id="pass" type="password" placeholder="Masukkan Password" v-model="password" required/>
                             <label for="name">Password</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" id="passConfirm" type="password" placeholder="Masukkan Password" v-model="password_confirm" required/>
+                            <label for="name">Password Confirm</label>
                         </div>
                         <div class="d-grid"><button type="submit" class="btn btn-primary btn-xl" id="submitButton">Daftar</button></div>
                     </form>
@@ -49,95 +56,66 @@
 
 <script>
     import '@/load/home'
+    import 'maz-ui/css/main.css'
     
-    import { reactive, computed } from 'vue'
-    import useValidate from '@vuelidate/core'
-    import { required, email, minLength } from '@vuelidate/validators'
-    import { useRouter } from 'vue-router'
+    import router from '@/router'
     import axios from 'axios'
     import Swal from 'sweetalert2'
 
-    
-    export default {
-        setup() {
-            const router = useRouter()
+    import MazPhoneNumberInput from 'maz-ui/components/MazPhoneNumberInput'
 
-            const state = reactive({
-                user: '',
+
+    export default {
+        data() {
+            return {
+                username: '',
                 email: '',
                 phone: '',
                 password: '',
-            })
-            const rules = computed(() => {
-                return {
-                    user: { required },
-                    email: { required, email },
-                    phone: { required },
-                    password: { required , minLength: minLength(6)},
-                }
-            })
-
-            function store() {
-                let user = state.user
-                let email = state.email
-                let phone = state.phone
-                let password = state.password
-
-                axios.post('http://recruitment.test/api/user', {
-                    name: user,
-                    email: email,
-                    phone_number: phone,
-                    password: password
-                }).then(() => {
-                    state.user = '',
-                    state.email= '',
-                    state.phone= '',
-                    state.password= '',
-
-                    router.push({
-                        name: 'Login',
-                    })
-
-                    Swal.fire(
-                        'Success',
-                        'Anda sudah terdaftar!',
-                        'success'
-                    )
-                }).catch(error => {
-                    Swal.fire(
-                        'Failed',
-                        error,
-                        'error'
-                    )
-                })
+                password_confirm: '',
             }
-
-            const v$ = useValidate(rules, state)
-            return { state, v$, store }
         },
         methods: {
-            submitForm() {
-                this.v$.$validate()
-                if (!this.v$.$error) {
-                    alert('Form successfully submitted.')
+            async submitForm() {
+                if (this.password == this.password_confirm) {
+                    try {
+                        const response = await axios.post('user', {
+                            name: this.username,
+                            email: this.email,
+                            phone_number: this.phone,
+                            password: this.password_confirm,
+                        })
+        
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.data.status,
+                            text: response.data.message,
+                        })
+        
+                        router.push({
+                            name: 'Login',
+                        })
+                    } catch (e) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: e.response.data.status,
+                            text: e.response.data.message,
+                        })
+                    }
                 } else {
-                    return
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: "Password doesn't match",
+                    })
                 }
             },
         },
-        validations() {
-            return {
-                user: { required },
-                password: { required },
-            }
+        components: {
+            MazPhoneNumberInput
         },
     }
 </script>
 
 <style>
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-    }
 </style>

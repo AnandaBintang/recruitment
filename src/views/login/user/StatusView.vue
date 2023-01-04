@@ -23,8 +23,8 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="statuses in status" :key="statuses.id">
-                                            <td>{{ statuses.id }}</td>
+                                        <tr v-for="(statuses, index) in status" :key="statuses.id">
+                                            <td>{{ index + 1 }}</td>
                                             <td>{{ statuses.created_at }}</td>
                                             <td>{{ statuses.position }}</td>
                                             <td><span class="badge bg-light text-dark">{{ statuses.status }}</span></td>
@@ -45,6 +45,7 @@
 import '@/load/login'
 
 import axios from 'axios'
+import Swal from 'sweetalert2'
 import DashboardNavbar from '@/components/dashboard/DashboardNavbar.vue';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar.vue';
 import DashboardFooter from '@/components/dashboard/DashboardFooter.vue';
@@ -53,18 +54,32 @@ export default {
     data(){
         return{
             status: [],
+            data: ''
         }
     },
-    mounted(){
-        let userId = JSON.parse(localStorage.getItem('user'))
+    async created() {
+        Swal.fire({
+            title: 'Loading Data!',
+            didOpen: () => {
+                Swal.showLoading();
+            },
+        });
 
-        axios.get('http://recruitment.test/api/status/' + userId.id)
-        .then(res => {
-            this.status = res.data.data
-            console.log(this.status)
-        }).catch(() => {
-            return
-        })
+        const response = await axios.get('user')
+        this.data = response.data.data
+
+        try {
+            const status = await axios.get('status/' + this.data.id)
+            this.status = status.data.data
+            Swal.close();
+        } catch {
+            Swal.close();
+            Swal.fire({
+                icon: "error",
+                title: "Error!",
+                text: "Server error, silahkan muat ulang website!",
+            })
+        }
     },
     components: { DashboardNavbar, DashboardSidebar, DashboardFooter }
 }

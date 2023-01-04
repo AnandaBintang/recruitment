@@ -19,32 +19,32 @@ const routes = [
     {
         path: "/dashboard",
         name: "Dashboard",
-        component: () => import('@/views/login/DashboardView.vue'),
+        component: () => import('@/views/login/user/DashboardView.vue'),
+    },
+    {
+        path: "/account",
+        name: "Account",
+        component: () => import('@/views/login/user/AccountView.vue'),
     },
     {
         path: "/profile",
         name: "Profile",
-        component: () => import('@/views/login/ProfileView.vue'),
+        component: () => import('@/views/login/user/ProfileView.vue'),
     },
     {
         path: "/vacancy",
         name: "Vacancy",
-        component: () => import('@/views/login/VacancyView.vue'),
+        component: () => import('@/views/login/user/VacancyView.vue'),
     },
     {
         path: "/status",
         name: "Status",
-        component: () => import('@/views/login/StatusView.vue'),
-    },
-    {
-        path: "/adminboard",
-        name: "Adminboard",
-        component: () => import('@/views/login/AdminboardView.vue'),
+        component: () => import('@/views/login/user/StatusView.vue'),
     },
     {
         path: "/application",
         name: "Application",
-        component: () => import('@/views/login/ApplicationView.vue'),
+        component: () => import('@/views/login/admin/ApplicationView.vue'),
     },
 ];
 

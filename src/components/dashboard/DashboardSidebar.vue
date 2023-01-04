@@ -15,25 +15,21 @@
                         <span class="badge bg-success-soft text-success ms-auto">2 New!</span>
                     </a>
                     <div class="sidenav-menu-heading">Home</div>
-                    <router-link v-if="data.level == 1" class="nav-link" active-class="active" to="/adminboard">
-                        <div class="nav-link-icon"><i data-feather="grid"></i></div>
-                        Dashboard
-                    </router-link>
-                    <router-link v-else class="nav-link" active-class="active" to="/dashboard">
+                    <router-link class="nav-link" active-class="active" to="/dashboard">
                         <div class="nav-link-icon"><i data-feather="grid"></i></div>
                         Dashboard
                     </router-link>
                     <div class="sidenav-menu-heading">Pages</div>
-                    <div v-if="data.level == 1">
+                    <div v-if="data.level == 1 || data.level == 3">
                         <router-link class="nav-link" active-class="active" to="/application">
                             <div class="nav-link-icon"><i data-feather="grid"></i></div>
                             Lamaran Kerja
                         </router-link>
                     </div>
-                    <div v-else>
+                    <div v-if="data.level == 4">
                         <router-link class="nav-link" active-class="active" to="/profile">
-                        <div class="nav-link-icon"><i data-feather="grid"></i></div>
-                        Data Diri
+                            <div class="nav-link-icon"><i data-feather="grid"></i></div>
+                            Data Diri
                         </router-link>
                         <router-link class="nav-link" active-class="active" to="/vacancy">
                             <div class="nav-link-icon"><i data-feather="grid"></i></div>
@@ -57,12 +53,18 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
     data: function() {
         return {
-            data: JSON.parse(localStorage.getItem('user'))
+            data: ''
         }
     },
+    async created() {
+        const response = await axios.get('user')
+        this.data = response.data.data
+    }
 }
 </script>
 
