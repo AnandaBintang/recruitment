@@ -22,8 +22,8 @@ const routes = [
         component: () => import('@/views/login/user/DashboardView.vue'),
     },
     {
-        path: "/account",
-        name: "Account",
+        path: "/account-setting",
+        name: "AccountSetting",
         component: () => import('@/views/login/user/AccountView.vue'),
     },
     {
@@ -45,6 +45,11 @@ const routes = [
         path: "/application",
         name: "Application",
         component: () => import('@/views/login/admin/ApplicationView.vue'),
+    },
+    {
+        path: "/account/:level",
+        name: "Account",
+        component: () => import('@/views/login/admin/AccountView.vue'),
     },
 ];
 

@@ -4,4 +4,6 @@ import router from './router'
 
 import '@/axios'
 
+window.$ = window.jQuery = require("jquery");
+
 createApp(App).use(router).mount('#app')

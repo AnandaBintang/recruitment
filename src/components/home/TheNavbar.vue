@@ -25,7 +25,7 @@ export default {
     },
     async created() {
         try {
-            const response = await axios.get('user')
+            const response = await axios.get('get-token')
             this.data = response.data.data.email
         } catch {
             console.clear()

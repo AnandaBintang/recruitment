@@ -3,40 +3,42 @@
         <nav class="sidenav shadow-right sidenav-light">
             <div class="sidenav-menu">
                 <div class="nav accordion" id="accordionSidenav">
-                    <div class="sidenav-menu-heading d-sm-none">Account</div>
-                    <a class="nav-link d-sm-none" href="#!">
-                        <div class="nav-link-icon"><i data-feather="bell"></i></div>
-                        Alerts
-                        <span class="badge bg-warning-soft text-warning ms-auto">4 New!</span>
-                    </a>
-                    <a class="nav-link d-sm-none" href="#!">
-                        <div class="nav-link-icon"><i data-feather="mail"></i></div>
-                        Messages
-                        <span class="badge bg-success-soft text-success ms-auto">2 New!</span>
-                    </a>
                     <div class="sidenav-menu-heading">Home</div>
                     <router-link class="nav-link" active-class="active" to="/dashboard">
-                        <div class="nav-link-icon"><i data-feather="grid"></i></div>
+                        <div class="nav-link-icon"><VueFeather type="activity"></VueFeather></div>
                         Dashboard
                     </router-link>
                     <div class="sidenav-menu-heading">Pages</div>
-                    <div v-if="data.level == 1 || data.level == 3">
+                    <div v-if="data.level == 'admin' || data.level == 'hrd' || data.level == 'direktur'">
                         <router-link class="nav-link" active-class="active" to="/application">
-                            <div class="nav-link-icon"><i data-feather="grid"></i></div>
+                            <div class="nav-link-icon"><VueFeather type="archive"></VueFeather></div>
                             Lamaran Kerja
                         </router-link>
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAccount" aria-expanded="false" aria-controls="collapseAccount">
+                            <div class="nav-link-icon"><VueFeather type="users"></VueFeather></div>
+                            Akun
+                            <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse show" id="collapseAccount" data-bs-parent="#accordionSidenav">
+                            <nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
+                                <router-link class="nav-link" active-class="active" to="/account/admin">Admin</router-link>
+                                <router-link class="nav-link" active-class="active" to="/account/direktur">Direktur</router-link>
+                                <router-link class="nav-link" active-class="active" to="/account/hrd">HRD</router-link>
+                                <router-link class="nav-link" active-class="active" to="/account/user">User</router-link>
+                            </nav>
+                        </div>
                     </div>
-                    <div v-if="data.level == 4">
+                    <div v-if="data.level == 'user'">
                         <router-link class="nav-link" active-class="active" to="/profile">
-                            <div class="nav-link-icon"><i data-feather="grid"></i></div>
+                            <div class="nav-link-icon"><VueFeather type="user"></VueFeather></div>
                             Data Diri
                         </router-link>
                         <router-link class="nav-link" active-class="active" to="/vacancy">
-                            <div class="nav-link-icon"><i data-feather="grid"></i></div>
+                            <div class="nav-link-icon"><VueFeather type="briefcase"></VueFeather></div>
                             Lowongan
                         </router-link>
                         <router-link class="nav-link" active-class="active" to="/status">
-                            <div class="nav-link-icon"><i data-feather="grid"></i></div>
+                            <div class="nav-link-icon"><VueFeather type="info"></VueFeather></div>
                             Status Lamaran
                         </router-link>
                     </div>
@@ -54,6 +56,7 @@
 
 <script>
 import axios from 'axios'
+import VueFeather from 'vue-feather';
 
 export default {
     data: function() {
@@ -62,9 +65,12 @@ export default {
         }
     },
     async created() {
-        const response = await axios.get('user')
+        const response = await axios.get('get-token')
         this.data = response.data.data
-    }
+    },
+    components: {
+        VueFeather
+    },
 }
 </script>
 

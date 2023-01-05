@@ -95,7 +95,7 @@ export default {
         })
 
         try {
-            const response = await axios.get('user')
+            const response = await axios.get('get-token')
             this.data = response.data.data
             
             this.getVacancy()

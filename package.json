@@ -24,7 +24,8 @@
     "roboto-fontface": "*",
     "simplelightbox": "^2.10.3",
     "sweetalert2": "^11.4.8",
-    "vue": "^3.2.13",
+    "vue": "^3.2.45",
+    "vue-feather": "^2.0.0",
     "vue-router": "^4.1.5"
   },
   "devDependencies": {

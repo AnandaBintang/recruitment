@@ -1,6 +1,6 @@
 <template>
     <nav class="topnav navbar navbar-expand shadow justify-content-between justify-content-sm-start navbar-light bg-white" id="sidenavAccordion">
-        <button class="btn btn-icon btn-transparent-dark order-1 order-lg-0 me-2 ms-lg-2 me-lg-0" id="sidebarToggle"><i data-feather="menu"></i></button>
+        <button class="btn btn-icon btn-transparent-dark order-1 order-lg-0 me-2 ms-lg-2 me-lg-0" id="sidebarToggle"><VueFeather type="menu"></VueFeather></button>
         <router-link to="/dashboard" class="navbar-brand pe-3 ps-4 ps-lg-2">E-Recruitment</router-link>
         <ul class="navbar-nav align-items-center ms-auto">
             <li class="nav-item dropdown no-caret dropdown-user me-3 me-lg-4">
@@ -14,12 +14,12 @@
                         </div>
                     </h6>
                     <div class="dropdown-divider"></div>
-                    <router-link to="/account" class="dropdown-item">
-                        <div class="dropdown-item-icon"><i data-feather="settings"></i></div>
+                    <router-link to="/account-setting" class="dropdown-item">
+                        <div class="dropdown-item-icon"><VueFeather type="settings"></VueFeather></div>
                         Account
                     </router-link>
                     <a class="dropdown-item" href="#" @click.prevent="logout">
-                        <div class="dropdown-item-icon"><i data-feather="log-out"></i></div>
+                        <div class="dropdown-item-icon"><VueFeather type="log-out"></VueFeather></div>
                         Logout
                     </a>
                 </div>
@@ -32,6 +32,7 @@
 import axios from 'axios'
 import router from '@/router'
 import Swal from 'sweetalert2'
+import VueFeather from 'vue-feather';
 
 export default {
     data: function() {
@@ -43,7 +44,7 @@ export default {
     async created() {
         let checkData = null
 
-        const response = await axios.get('user')
+        const response = await axios.get('get-token')
         this.data = response.data.data
 
         try {
@@ -93,6 +94,9 @@ export default {
                     }
             });
         }
+    },
+    components: {
+        VueFeather
     },
 }
 </script>
