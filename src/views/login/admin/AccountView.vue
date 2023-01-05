@@ -11,7 +11,7 @@
                     <hr class="mt-0 mb-4" />
                     <div class="card mb-4">
                         <div class="card-header">Lowongan Pekerjaan</div>
-                        <router-link class="btn btn-primary">Add</router-link>
+                        <router-link to="#" class="btn btn-primary">Add</router-link>
                         <div class="card-body p-0">
                             <div class="table-responsive table-billing-history">
                                 <table class="table mb-0" id="tableApplicant">
