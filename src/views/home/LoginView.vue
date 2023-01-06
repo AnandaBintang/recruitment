@@ -10,7 +10,7 @@
             </div>
             <div class="row gx-4 gx-lg-5 justify-content-center mb-5">
                 <div class="col-lg-6">
-                    <form id="contactForm" @submit.prevent="login">
+                    <form id="contactForm" @submit.prevent="login()">
                         <div class="form-floating mb-3">
                             <input class="form-control" id="username" type="email" placeholder="Masukkan Email" v-model="email" required/>
                             <label for="name">Email</label>

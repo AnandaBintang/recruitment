@@ -82,6 +82,7 @@
                         const response = await axios.post('user', {
                             name: this.username,
                             email: this.email,
+                            level: 'user',
                             phone_number: this.phone,
                             password: this.password_confirm,
                         })

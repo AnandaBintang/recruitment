@@ -14,12 +14,12 @@
                             <div class="nav-link-icon"><VueFeather type="archive"></VueFeather></div>
                             Lamaran Kerja
                         </router-link>
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAccount" aria-expanded="false" aria-controls="collapseAccount">
+                        <a class="nav-link" :class="{ collapsed: collapsed }" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAccount" aria-expanded="false" aria-controls="collapseAccount">
                             <div class="nav-link-icon"><VueFeather type="users"></VueFeather></div>
                             Akun
                             <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
-                        <div class="collapse show" id="collapseAccount" data-bs-parent="#accordionSidenav">
+                        <div class="collapse" :class="{ show: !collapsed }" id="collapseAccount" data-bs-parent="#accordionSidenav">
                             <nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
                                 <router-link class="nav-link" active-class="active" to="/account/admin">Admin</router-link>
                                 <router-link class="nav-link" active-class="active" to="/account/direktur">Direktur</router-link>
@@ -61,12 +61,18 @@ import VueFeather from 'vue-feather';
 export default {
     data: function() {
         return {
-            data: ''
+            data: '',
+            collapsed: true,
+            route: this.$route.name,
         }
     },
     async created() {
         const response = await axios.get('get-token')
         this.data = response.data.data
+
+        if(this.route == 'Account') {
+            this.collapsed = false
+        }
     },
     components: {
         VueFeather
