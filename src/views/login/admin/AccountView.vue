@@ -6,45 +6,45 @@
             <main>
                 <div class="container-xl px-4 mt-4">
                     <nav class="nav nav-borders">
-                        <a class="nav-link active">Lowongan</a>
+                        <a class="nav-link active">Data User</a>
                     </nav>
                     <hr class="mt-0 mb-4" />
                     <div class="card mb-4">
-                        <div class="card-header">Lowongan Pekerjaan</div>
-                        <a class="btn btn-primary" @click.prevent="openForm()">Add</a>
-                        <div class="card-body p-0">
-                            <div class="table-responsive table-billing-history">
-                                <table class="table mb-0" id="tableApplicant">
-                                    <thead>
-                                        <tr>
-                                            <th class="border-gray-200" scope="col">#</th>
-                                            <th class="border-gray-200" scope="col">Username</th>
-                                            <th class="border-gray-200" scope="col">Email</th>
-                                            <th class="border-gray-200" scope="col">Status</th>
-                                            <th class="border-gray-200" scope="col">Nomor Telepon</th>
-                                            <th class="border-gray-200" scope="col">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(users, index) in user" :key="users.id">
-                                            <td>{{ index + 1 }}</td>
-                                            <td>{{ users.name }}</td>
-                                            <td>{{ users.email }}</td>
-                                            <td>{{ users.status }}</td>
-                                            <td>{{ users.phone_number }}</td>
-                                            <td>
-                                                <button class="btn btn-danger btn-xs" @click.prevent="remove(users.id)" title="Delete User"><i class="fa fa-trash"></i></button> |
-                                                <button class="btn btn-primary btn-xs" @click.prevent="edit(users.id)" title="Edit User"><i class="fa fa-pen"></i></button> |
-                                                <button class="btn btn-warning btn-xs" title="See User Profile"><i class="fa fa-eye"></i></button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        <div class="card-header">Data {{ level }}</div>
+                        <div class="card-body p-0 mb-3">
+                            <div class="row">
+                                <div class="col-lg-10 offset-lg-1">
+                                    <div class="table-responsive table-billing-history mt-3">
+                                        <DataTable
+                                            class="table table-hover display" 
+                                            :data="user"
+                                            :columns="columns"
+                                            :options="{responsive: true, select: true, autoWidth: false,dom: 'Bflrtip', buttons: buttons, }"
+                                            ref="table"
+                                        >
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Username</th>
+                                                    <th>Email</th>
+                                                    <th>Status</th>
+                                                    <th>Nomor Telepon</th>
+                                                </tr>
+                                            </thead>
+                                        </DataTable>
+                                        <div class="mt-3 mb-3">
+                                            <a class="btn btn-sm btn-primary" @click.prevent="openForm()"><i class="fa fa-plus"></i></a> |
+                                            <button class="btn btn-sm btn-danger" @click.prevent="remove()" title="Delete User"><i class="fa fa-trash"></i></button> |
+                                            <button class="btn btn-sm btn-warning" @click.prevent="edit()" title="Edit User"><i class="fa fa-pen"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </main>
+            <input type="hidden" name="idUser" id="idUser" value="asd" readonly>
             <div class="modal fade" id="accountForm" data-bs-backdrop="static" tabindex="-1" aria-labelledby="accountForm" aria-hidden="true">
                 <form @submit.prevent="input()">
                     <div class="modal-dialog modal-dialog-centered">
@@ -56,16 +56,16 @@
                         <div class="modal-body">
                                 <div class="mb-3">
                                     <label class="col-form-label">Username</label>
-                                    <input type="text" class="form-control" v-model="username" required placeholder="Enter a Username">
+                                    <input type="text" class="form-control" v-model="this.form.username" required placeholder="Enter a Username">
                                 </div>
                                 <div class="mb-3">
                                     <label class="col-form-label">Email</label>
-                                    <input type="email" class="form-control" v-model="email" required placeholder="Enter an Email">
+                                    <input type="email" class="form-control" v-model="this.form.email" required placeholder="Enter an Email">
                                 </div>
                                 <div class="mb-3">
                                     <label class="col-form-label">Nomor Telepon</label>
                                     <MazPhoneNumberInput
-                                        v-model="phone"
+                                        v-model="this.form.phone"
                                         required
                                         fetch-country
                                         show-code-on-list
@@ -77,11 +77,11 @@
                                 <div v-if="!editForm">
                                     <div class="mb-3">
                                         <label class="col-form-label">Password</label>
-                                        <input type="password" class="form-control" v-model="password" required placeholder="Enter a Password">
+                                        <input type="password" class="form-control" v-model="this.form.password" required placeholder="Enter a Password">
                                     </div>
                                     <div class="mb-3">
                                         <label class="col-form-label">Re - Enter Password</label>
-                                        <input type="password" class="form-control" v-model="password_confirm" required placeholder="Re-Enter your Password">
+                                        <input type="password" class="form-control" v-model="this.form.password_confirm" required placeholder="Re-Enter your Password">
                                     </div>
                                 </div>
                                 <div v-else>
@@ -104,12 +104,20 @@
 
 <script>
 import '@/load/login'
-import 'maz-ui/css/main.css'
+import 'datatables.net-select'
+import 'datatables.net-responsive-bs5'
+import 'datatables.net-buttons/js/buttons.print'
 
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import { ref } from 'vue'
 import { Modal } from 'bootstrap/dist/js/bootstrap.bundle.min'
-// import { DataTable } from "simple-datatables"
+import DataTable from "datatables.net-vue3"
+import DataTableLib from "datatables.net-bs5"
+import ButtonsHtml5 from "datatables.net-buttons/js/buttons.html5"
+import pdfFonts from "pdfmake/build/vfs_fonts"
+import pdfmake from "pdfmake"
+import JsZip from "jszip"
 
 import DashboardNavbar from '@/components/dashboard/DashboardNavbar.vue';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar.vue';
@@ -120,14 +128,63 @@ export default {
     data() {
         return{
             editForm: false,
-            user: [],
+            user: ref([]),
             id: null,
             level: '',
-            username: '',
-            email: '',
-            phone: '',
-            password: '',
-            password_confirm: '',
+            form: {
+                username: '',
+                email: '',
+                phone: '',
+                password: '',
+                password_confirm: '',
+            },
+            columns:[
+                {data:null, render: function(data,type,row,meta)
+                    {return `${meta.row+1}`}},
+                {data:'name'},
+                {data:'email'},
+                {data:'status'},
+                {data:'phone_number'},
+                {data:'id', visible: false, searchable: false,},
+            ],
+            buttons: [
+                {
+                    title: `Data User`,
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4 ]
+                    },
+                    text: '<i class="fas fa-solid fa-file-pdf"></i> PDF',
+                    className: 'btn btn-sm btn-danger'
+                },
+                {
+                    title: `Data User`,
+                    extend: 'csv',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4 ]
+                    },
+                    text: '<i class="fas fa-solid fa-file-csv"></i> CSV',
+                    className: 'btn btn-sm btn-success'
+                },
+                {
+                    title: `Data User`,
+                    extend: 'print',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4 ]
+                    },
+                    text: '<i class="fas fa-solid fa-print"></i> Print',
+                    className: 'btn btn-sm btn-dark'
+                },
+                {
+                    title: `Data User`,
+                    extend: 'copy',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4 ]
+                    },
+                    text: '<i class="fas fa-solid fa-copy"></i> Copy',
+                    className: 'btn btn-sm btn-warning'
+                },
+            ]
         }
     },
     async beforeRouteUpdate(to) {
@@ -170,43 +227,13 @@ export default {
             Swal.close()
         }
     },
-    // async mounted() {
-    //     const response = await axios.get('get-level/' + this.level)
-
-    //     let data = response.data.data
-
-    //     let arr = []
-    //     let btn = '<button class="btn btn-danger btn-xs" @click.prevent="remove(users.id)" title="Delete User"><i class="fa fa-trash"></i></button> | ' +
-    //                 '<button class="btn btn-primary btn-xs" title="Edit User"><i class="fa fa-pen"></i></button> | ' +
-    //                 '<button class="btn btn-warning btn-xs" title="See User Profile"><i class="fa fa-eye"></i></button>'
-
-    //     for (var i = 0; i < data.length; i++) {
-    //         arr.push(btn);        
-    //     }
-
-    //     let col = {
-    //         "heading": "Actions",
-    //         "data": arr
-    //     }
-
-    //     let obj = {
-    //         "headings": [
-    //             "#",
-    //             "Username",
-    //             "Email",
-    //             "Status",
-    //             "Nomor Telepon",
-    //         ],
-    //         "data": data.map(item => Object.values(item)),
-    //     };
-
-    //     const dataTable = new DataTable('#tableApplicant', {
-    //         data: obj,
-    //     })
-        
-    //     dataTable.columns.add(col)
-    //     dataTable.init()
-    // },
+    beforeMount() {
+        window.JsZip = JsZip
+        pdfmake.vfs = pdfFonts.pdfMake.vfs
+        DataTable.use(DataTableLib)
+        DataTable.use(pdfmake)
+        DataTable.use(ButtonsHtml5)
+    },
     methods: {
         async openForm() {
             const accountForm = new Modal('#accountForm', {
@@ -216,14 +243,14 @@ export default {
         },
         async input() {
             if(!this.editForm){
-                if (this.password == this.password_confirm) {
+                if (this.form.password == this.form.password_confirm) {
                     try {
                         const response = await axios.post('user', {
-                            name: this.username,
-                            email: this.email,
+                            name: this.form.username,
+                            email: this.form.email,
                             level: this.level,
-                            phone_number: this.phone,
-                            password: this.password_confirm,
+                            phone_number: this.form.phone,
+                            password: this.form.password_confirm,
                         })
         
                         Swal.fire({
@@ -252,9 +279,9 @@ export default {
             } else {
                 try {
                     const response = await axios.put(`user/${this.id}`, {
-                        name: this.username,
-                        email: this.email,
-                        phone_number: this.phone
+                        name: this.form.username,
+                        email: this.form.email,
+                        phone_number: this.form.phone
                     })
 
                     Swal.fire({
@@ -275,15 +302,21 @@ export default {
                 }
             }
         },
-        async edit(id){
-            this.id = id
+        async edit(){
+            let dt = this.$refs.table.dt();
+            let id = document.getElementById("idUser")
+
+            dt.rows({ selected: true }).every(function () {
+                id.value = this.data().id;
+            })
+            this.id = parseInt(id.value)
             this.editForm = true
 
-            const res = await axios.get('user/' + id)
+            const res = await axios.get('user/' + this.id)
 
-            this.username = res.data.data.name
-            this.email = res.data.data.email
-            this.phone = res.data.data.phone_number
+            this.form.username = res.data.data.name
+            this.form.email = res.data.data.email
+            this.form.phone = res.data.data.phone_number
 
             this.openForm()
         },
@@ -315,7 +348,7 @@ export default {
                     }
             })
         },
-        async remove(id){
+        async remove(){
             Swal.fire({
                 title: 'Anda Yakin ingin Menghapus User?',
                 icon: 'warning',
@@ -326,22 +359,27 @@ export default {
                 reverseButtons: false
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        axios.delete('user/' + id)
-                        .then(res => {
-                            Swal.fire({
-                                icon: "success",
-                                title: "Success!",
-                                text: res.data.message,
-                            })
+                        let dt = this.$refs.table.dt();
 
-                            this.render()
-                        }).catch(res => {
-                            Swal.fire({
-                                icon: "error",
-                                title: "Failed!",
-                                text: res.data.message,
+                        dt.rows({ selected: true }).every(function () {
+                            let selectedData = this.data();
+                            axios.delete('user/' + selectedData.id)
+                            .then(res => {
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Success!",
+                                    text: res.data.message,
+                                })
+                            }).catch(res => {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Failed!",
+                                    text: res.data.message,
+                                })
                             })
-                        })
+                        });
+
+                        this.render()
                     }
             })
         },
@@ -351,16 +389,18 @@ export default {
             this.user = render.data.data
             this.editForm = false
             this.id = null
-            this.username = ''
-            this.email = ''
-            this.phone = ''
-            this.password = ''
-            this.password_confirm = ''
+            this.form.username = ''
+            this.form.email = ''
+            this.form.phone = ''
+            this.form.password = ''
+            this.form.password_confirm = ''
         }
     },
-    components: { DashboardNavbar, DashboardSidebar, DashboardFooter, MazPhoneNumberInput }
+    components: { DashboardNavbar, DashboardSidebar, DashboardFooter, MazPhoneNumberInput, DataTable }
 }
 </script>
 
-<style>
+<style scoped>
+@import 'maz-ui/css/main.css';
+@import 'datatables.net-bs5';
 </style>

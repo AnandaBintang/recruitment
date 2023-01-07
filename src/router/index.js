@@ -24,7 +24,7 @@ const routes = [
     {
         path: "/account-setting",
         name: "AccountSetting",
-        component: () => import('@/views/login/user/AccountView.vue'),
+        component: () => import('@/views/login/AccountSetting.vue'),
     },
     {
         path: "/profile",

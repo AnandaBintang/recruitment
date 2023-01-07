@@ -56,7 +56,6 @@
 
 <script>
     import '@/load/home'
-    import 'maz-ui/css/main.css'
     
     import router from '@/router'
     import axios from 'axios'
@@ -118,5 +117,6 @@
     }
 </script>
 
-<style>
+<style scoped>
+@import 'maz-ui/css/main.css';
 </style>
