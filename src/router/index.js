@@ -19,7 +19,7 @@ const routes = [
     {
         path: "/dashboard",
         name: "Dashboard",
-        component: () => import('@/views/login/user/DashboardView.vue'),
+        component: () => import('@/views/login/DashboardView.vue'),
     },
     {
         path: "/account-setting",
