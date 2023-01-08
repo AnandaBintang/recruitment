@@ -6,18 +6,18 @@
             <main>
                 <div class="container-xl px-4 mt-4">
                     <nav class="nav nav-borders">
-                        <a class="nav-link active">Data User</a>
+                        <a class="nav-link active">Lowongan Pekerjaan</a>
                     </nav>
                     <hr class="mt-0 mb-4" />
                     <div class="card mb-4">
-                        <div class="card-header">Data {{ level }}</div>
+                        <div class="card-header">Daftar Lowongan Pekerjaan</div>
                         <div class="card-body p-0 mb-3">
                             <div class="row">
                                 <div class="col-lg-10 offset-lg-1">
                                     <div class="table-responsive table-billing-history mt-3">
                                         <DataTable
                                             class="table table-hover display" 
-                                            :data="user"
+                                            :data="vacancy"
                                             :columns="columns"
                                             :options="{responsive: true, select: true, autoWidth: false,dom: 'Bflrtip', buttons: buttons, }"
                                             ref="table"
@@ -25,10 +25,8 @@
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
-                                                    <th>Username</th>
-                                                    <th>Email</th>
-                                                    <th>Status</th>
-                                                    <th>Nomor Telepon</th>
+                                                    <th>Posisi Kerja</th>
+                                                    <th>Nilai Minimal</th>
                                                 </tr>
                                             </thead>
                                         </DataTable>
@@ -44,53 +42,27 @@
                     </div>
                 </div>
             </main>
-            <input type="hidden" name="idUser" id="idUser" readonly>
-            <div class="modal fade" id="accountForm" data-bs-backdrop="static" tabindex="-1" aria-labelledby="accountForm" aria-hidden="true">
+            <input type="hidden" name="idJob" id="idJob" readonly>
+            <div class="modal fade" id="vacancyForm" data-bs-backdrop="static" tabindex="-1" aria-labelledby="vacancyForm" aria-hidden="true">
                 <form @submit.prevent="input()">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5">Data User</h1>
+                            <h1 class="modal-title fs-5">Data Lowongan Kerja</h1>
                             <button type="button" class="btn-close" @click.prevent="render()" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                                 <div class="mb-3">
-                                    <label class="col-form-label">Username</label>
-                                    <input type="text" class="form-control" v-model="this.form.username" required placeholder="Enter a Username">
+                                    <label class="col-form-label">Posisi</label>
+                                    <input type="text" class="form-control" v-model="this.form.position" required placeholder="Enter a Position Name">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="col-form-label">Email</label>
-                                    <input type="email" class="form-control" v-model="this.form.email" required placeholder="Enter an Email">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="col-form-label">Nomor Telepon</label>
-                                    <MazPhoneNumberInput
-                                        v-model="this.form.phone"
-                                        required
-                                        fetch-country
-                                        show-code-on-list
-                                        color="info"
-                                        :preferred-countries="['ID', 'FR', 'BE', 'DE', 'US', 'GB']"
-                                        :ignored-countries="['AC']"
-                                    />
-                                </div>
-                                <div v-if="!editForm">
-                                    <div class="mb-3">
-                                        <label class="col-form-label">Password</label>
-                                        <input type="password" class="form-control" v-model="this.form.password" required placeholder="Enter a Password">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="col-form-label">Re - Enter Password</label>
-                                        <input type="password" class="form-control" v-model="this.form.password_confirm" required placeholder="Re-Enter your Password">
-                                    </div>
-                                </div>
-                                <div v-else>
-                                    <button type="button" class="btn btn-danger-soft text-danger btn-sm mt-3 mb-2" @click.prevent="resetPassword(id)">Reset Password</button>
-                                    <div class="small text-muted"><i class="fa-solid fa-triangle-exclamation"></i> The reset password will return it to "password"</div>
+                                    <label class="col-form-label">Nilai Minimal</label>
+                                    <input type="number" class="form-control" v-model="this.form.minVal" required placeholder="Enter a Minimum Value">
                                 </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeModal" @click.prevent="render()">Close</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="closeModal" @click.prevent="render()">Close</button>
                             <button type="submit" class="btn btn-primary">Input</button>
                         </div>
                         </div>
@@ -122,64 +94,56 @@ import JsZip from "jszip"
 import DashboardNavbar from '@/components/dashboard/DashboardNavbar.vue';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar.vue';
 import DashboardFooter from '@/components/dashboard/DashboardFooter.vue';
-import MazPhoneNumberInput from 'maz-ui/components/MazPhoneNumberInput'
 
 export default {
     data() {
         return{
-            editForm: false,
-            user: ref([]),
+            vacancy: ref([]),
             id: null,
-            level: '',
             form: {
-                username: '',
-                email: '',
-                phone: '',
-                password: '',
-                password_confirm: '',
+                position: '',
+                minVal: '',
             },
             columns:[
                 {data:null, render: function(data,type,row,meta)
                     {return `${meta.row+1}`}},
-                {data:'name'},
-                {data:'email'},
-                {data:'status'},
-                {data:'phone_number'},
+                {data:'position'},
+                {data:'minimum_value'},
                 {data:'id', visible: false, searchable: false,},
             ],
             buttons: [
                 {
-                    title: `Data User`,
+                    title: `Daftar Lowongan Pekerjaan`,
                     extend: 'pdf',
                     exportOptions: {
-                        columns: [ 0, 1, 2, 3, 4 ]
+                        columns: [ 0, 1, 2 ]
                     },
                     text: '<i class="fas fa-solid fa-file-pdf"></i> PDF',
                     className: 'btn btn-sm btn-danger'
                 },
                 {
-                    title: `Data User`,
+                    title: `Daftar Lowongan Pekerjaan`,
                     extend: 'csv',
                     exportOptions: {
-                        columns: [ 0, 1, 2, 3, 4 ]
+                        columns: [ 0, 1, 2 ]
                     },
                     text: '<i class="fas fa-solid fa-file-csv"></i> CSV',
                     className: 'btn btn-sm btn-success'
                 },
                 {
-                    title: `Data User`,
+                    title: `Daftar Lowongan Pekerjaan`,
                     extend: 'print',
                     exportOptions: {
-                        columns: [ 0, 1, 2, 3, 4 ]
+                        columns: [ 0, 1, 2 ]
                     },
                     text: '<i class="fas fa-solid fa-print"></i> Print',
                     className: 'btn btn-sm btn-dark'
                 },
                 {
-                    title: `Data User`,
+                    title: `Daftar Lowongan Pekerjaan`,
                     extend: 'copy',
                     exportOptions: {
-                        columns: [ 0, 1, 2, 3, 4 ]
+                        columns: [ 0, 1, 2 ]
                     },
                     text: '<i class="fas fa-solid fa-copy"></i> Copy',
                     className: 'btn btn-sm btn-warning'
@@ -187,29 +151,7 @@ export default {
             ]
         }
     },
-    async beforeRouteUpdate(to) {
-        this.level = to.params.level
-
-        Swal.fire({
-            title: 'Loading Data!',
-            didOpen: () => {
-                Swal.showLoading();
-            },
-        });
-
-        try{
-            const response = await axios.get('get-level/' + this.level)
-
-            this.user = response.data.data
-            
-            Swal.close()
-        } catch(e) {
-            Swal.close()
-        }
-    },
     async created() {
-        this.level = this.$route.params.level
-
         Swal.fire({
             title: 'Loading Data!',
             didOpen: () => {
@@ -218,9 +160,9 @@ export default {
         });
 
         try{
-            const response = await axios.get('get-level/' + this.level)
+            const response = await axios.get('job')
 
-            this.user = response.data.data
+            this.vacancy = response.data.data
             
             Swal.close()
         } catch(e) {
@@ -236,52 +178,40 @@ export default {
     },
     methods: {
         openForm() {
-            const accountForm = new Modal('#accountForm', {
+            const vacancyForm = new Modal('#vacancyForm', {
                 keyboard: false
             })
-            accountForm.show()
+            vacancyForm.show()
         },
         async input() {
             if(!this.editForm){
-                if (this.form.password == this.form.password_confirm) {
-                    try {
-                        const response = await axios.post('user', {
-                            name: this.form.username,
-                            email: this.form.email,
-                            level: this.level,
-                            phone_number: this.form.phone,
-                            password: this.form.password_confirm,
-                        })
-        
-                        Swal.fire({
-                            icon: 'success',
-                            title: response.data.status,
-                            text: response.data.message,
-                        })
+                try {
+                    const response = await axios.post('job', {
+                        position: this.form.position,
+                        minimum_value: this.form.minVal
+                    })
+    
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.data.status,
+                        text: response.data.message,
+                    })
 
-                        document.getElementById('closeModal').click()
+                    document.getElementById('closeModal').click()
 
-                        this.render()
-                    } catch (e) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: e.response.data.status,
-                            text: e.response.data.message,
-                        })
-                    }
-                } else {
+                    this.render()
+                } catch (e) {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Error',
-                        text: "Password doesn't match",
+                        title: e.response.data.status,
+                        text: e.response.data.message,
                     })
                 }
             } else {
                 try {
-                    const response = await axios.put(`user/${this.id}`, {
-                        name: this.form.username,
-                        email: this.form.email,
-                        phone_number: this.form.phone
+                    const response = await axios.put(`job/${this.id}`, {
+                        position: this.form.position,
+                        minimum_value: this.form.minVal
                     })
 
                     Swal.fire({
@@ -304,7 +234,7 @@ export default {
         },
         async edit(){
             let dt = this.$refs.table.dt();
-            let id = document.getElementById("idUser")
+            let id = document.getElementById("idJob")
 
             dt.rows({ selected: true }).every(function () {
                 id.value = this.data().id;
@@ -312,11 +242,10 @@ export default {
             this.id = parseInt(id.value)
             this.editForm = true
 
-            const res = await axios.get(`user/${this.id}`)
+            const res = await axios.get(`job/${this.id}`)
 
-            this.form.username = res.data.data.name
-            this.form.email = res.data.data.email
-            this.form.phone = res.data.data.phone_number
+            this.form.position = res.data.data.position
+            this.form.minVal = res.data.data.minimum_value
 
             this.openForm()
         },
@@ -350,7 +279,7 @@ export default {
         },
         async remove(){
             Swal.fire({
-                title: 'Anda Yakin ingin Menghapus User?',
+                title: 'Anda Yakin ingin Menghapus Lowongan Pekerjaan?',
                 icon: 'warning',
                 showCancelButton: true,
                 cancelButtonColor: '#22bb33',
@@ -363,7 +292,7 @@ export default {
 
                         dt.rows({ selected: true }).every(function () {
                             let selectedData = this.data();
-                            axios.delete('user/' + selectedData.id)
+                            axios.delete(`job/${selectedData.id}`)
                             .then(res => {
                                 Swal.fire({
                                     icon: "success",
@@ -374,7 +303,7 @@ export default {
                                 Swal.fire({
                                     icon: "error",
                                     title: "Failed!",
-                                    text: "Server error, silahkan muat ulang website!",
+                                    text: "Server error, silahkan muat ulang website!"
                                 })
                             })
                         });
@@ -384,23 +313,19 @@ export default {
             })
         },
         async render() {
-            const render = await axios.get('get-level/' + this.level)
+            const render = await axios.get('job')
 
-            this.user = render.data.data
+            this.vacancy = render.data.data
             this.editForm = false
             this.id = null
-            this.form.username = ''
-            this.form.email = ''
-            this.form.phone = ''
-            this.form.password = ''
-            this.form.password_confirm = ''
+            this.form.position = ''
+            this.form.minVal = ''
         }
     },
-    components: { DashboardNavbar, DashboardSidebar, DashboardFooter, MazPhoneNumberInput, DataTable }
+    components: { DashboardNavbar, DashboardSidebar, DashboardFooter, DataTable }
 }
 </script>
 
 <style scoped>
-@import 'maz-ui/css/main.css';
 @import 'datatables.net-bs5';
 </style>

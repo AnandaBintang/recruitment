@@ -42,6 +42,11 @@ const routes = [
         component: () => import('@/views/login/user/StatusView.vue'),
     },
     {
+        path: "/vacancy-list",
+        name: "VacancyList",
+        component: () => import('@/views/login/admin/VacancyList.vue'),
+    },
+    {
         path: "/application",
         name: "Application",
         component: () => import('@/views/login/admin/ApplicationView.vue'),

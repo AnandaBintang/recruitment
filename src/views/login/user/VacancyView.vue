@@ -125,7 +125,7 @@ export default {
         },
         async openInfo(id) {
             const info = await axios.get('info/' + id)
-            const value = await axios.get('job/' +id)
+            const value = await axios.get('get-min-val/' + id)
 
             this.detail = info.data.data
             this.minValue = value.data.data

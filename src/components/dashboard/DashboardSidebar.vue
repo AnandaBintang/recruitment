@@ -10,9 +10,13 @@
                     </router-link>
                     <div class="sidenav-menu-heading">Pages</div>
                     <div v-if="data.level == 'admin' || data.level == 'hrd' || data.level == 'direktur'">
+                        <router-link class="nav-link" active-class="active" to="/vacancy-list">
+                            <div class="nav-link-icon"><VueFeather type="briefcase"></VueFeather></div>
+                            Lowongan
+                        </router-link>
                         <router-link class="nav-link" active-class="active" to="/application">
                             <div class="nav-link-icon"><VueFeather type="archive"></VueFeather></div>
-                            Lamaran Kerja
+                            Lamaran
                         </router-link>
                         <a class="nav-link" :class="{ collapsed: collapsed }" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAccount" aria-expanded="false" aria-controls="collapseAccount">
                             <div class="nav-link-icon"><VueFeather type="users"></VueFeather></div>

@@ -6,40 +6,44 @@
             <main>
                 <div class="container-xl px-4 mt-4">
                     <nav class="nav nav-borders">
-                        <a class="nav-link active">Lowongan</a>
+                        <a class="nav-link active">Pelamar</a>
                     </nav>
                     <hr class="mt-0 mb-4" />
                     <div class="card mb-4">
-                        <div class="card-header">Lowongan Pekerjaan</div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive table-billing-history">
-                                <table class="table mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th class="border-gray-200" scope="col">#</th>
-                                            <th class="border-gray-200" scope="col">Pelamar</th>
-                                            <th class="border-gray-200" scope="col">Posisi</th>
-                                            <th class="border-gray-200" scope="col">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(app, index) in applicant" :key="app.id">
-                                            <td>{{ index + 1 }}</td>
-                                            <td>{{ app.first_name + ' ' + app.last_name }}</td>
-                                            <td>{{ app.position }}</td>
-                                            <td>
-                                                <button class="btn btn-danger btn-xs" type="submit" @click.prevent="reject(app.id)"><i class="fa fa-xmark"></i></button> |
-                                                <button class="btn btn-warning btn-xs" type="submit" @click.prevent="openInfo(app.user_id)"><i class="fa fa-info"></i></button> |
-                                                <button class="btn btn-success btn-xs" type="submit" @click.prevent="accept(app.id)"><i class="fa fa-check"></i></button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        <div class="card-header">Lamaran Pekerjaan</div>
+                        <div class="card-body p-0 mb-3">
+                            <div class="row">
+                                <div class="col-lg-10 offset-lg-1">
+                                    <div class="table-responsive table-billing-history mt-3">
+                                        <DataTable
+                                            class="table table-hover display" 
+                                            :data="applicant"
+                                            :columns="columns"
+                                            :options="{responsive: true, select: true, autoWidth: false,dom: 'Bflrtip', buttons: buttons, }"
+                                            ref="table"
+                                        >
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Pelamar</th>
+                                                    <th>Posisi</th>
+                                                </tr>
+                                            </thead>
+                                        </DataTable>
+                                        <div class="mt-3 mb-3">
+                                            <button class="btn btn-danger btn-sm" type="submit" @click.prevent="reject()"><i class="fa fa-xmark"></i></button> |
+                                            <button class="btn btn-warning btn-sm" type="submit" @click.prevent="openInfo()"><i class="fa fa-info"></i></button> |
+                                            <button class="btn btn-success btn-sm" type="submit" @click.prevent="accept()"><i class="fa fa-check"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </main>
+            <input type="hidden" name="idApp" id="idApp" readonly>
+            <input type="hidden" name="idUser" id="idUser" readonly>
             <div class="modal fade" id="applicantInfo" tabindex="-1" aria-labelledby="vacancyInfo" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -65,10 +69,20 @@
 
 <script>
 import '@/load/login'
+import 'datatables.net-select'
+import 'datatables.net-responsive-bs5'
+import 'datatables.net-buttons/js/buttons.print'
 
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import { ref } from 'vue'
 import { Modal } from 'bootstrap/dist/js/bootstrap.bundle.min'
+import DataTable from "datatables.net-vue3"
+import DataTableLib from "datatables.net-bs5"
+import ButtonsHtml5 from "datatables.net-buttons/js/buttons.html5"
+import pdfFonts from "pdfmake/build/vfs_fonts"
+import pdfmake from "pdfmake"
+import JsZip from "jszip"
 
 import DashboardNavbar from '@/components/dashboard/DashboardNavbar.vue';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar.vue';
@@ -77,8 +91,54 @@ import DashboardFooter from '@/components/dashboard/DashboardFooter.vue';
 export default {
     data() {
         return{
-            applicant: [],
+            applicant: ref([]),
             cv: null,
+            columns:[
+                {data:null, render: function(data,type,row,meta)
+                    {return `${meta.row+1}`}},
+                {data:'first_name'},
+                {data:'position'},
+                {data:'id', visible: false, searchable: false,},
+                {data:'user_id', visible: false, searchable: false,},
+            ],
+            buttons: [
+                {
+                    title: `Data Pelamar Kerja`,
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: [ 0, 1, 2 ]
+                    },
+                    text: '<i class="fas fa-solid fa-file-pdf"></i> PDF',
+                    className: 'btn btn-sm btn-danger'
+                },
+                {
+                    title: `Data Pelamar Kerja`,
+                    extend: 'csv',
+                    exportOptions: {
+                        columns: [ 0, 1, 2 ]
+                    },
+                    text: '<i class="fas fa-solid fa-file-csv"></i> CSV',
+                    className: 'btn btn-sm btn-success'
+                },
+                {
+                    title: `Data Pelamar Kerja`,
+                    extend: 'print',
+                    exportOptions: {
+                        columns: [ 0, 1, 2 ]
+                    },
+                    text: '<i class="fas fa-solid fa-print"></i> Print',
+                    className: 'btn btn-sm btn-dark'
+                },
+                {
+                    title: `Data Pelamar Kerja`,
+                    extend: 'copy',
+                    exportOptions: {
+                        columns: [ 0, 1, 2 ]
+                    },
+                    text: '<i class="fas fa-solid fa-copy"></i> Copy',
+                    className: 'btn btn-sm btn-warning'
+                },
+            ]
         }
     },
     async created() {
@@ -93,7 +153,6 @@ export default {
             const response = await axios.get('status')
 
             this.applicant = response.data.data
-            
 
             Swal.close()
         } catch(e) {
@@ -101,10 +160,24 @@ export default {
 
         }
     },
+    beforeMount() {
+        window.JsZip = JsZip
+        pdfmake.vfs = pdfFonts.pdfMake.vfs
+        DataTable.use(DataTableLib)
+        DataTable.use(pdfmake)
+        DataTable.use(ButtonsHtml5)
+    },
     methods: {
-        async openInfo(id) {
+        async openInfo() {
+            let dt = this.$refs.table.dt();
+            let id = document.getElementById("idUser")
+
+            dt.rows({ selected: true }).every(function () {
+                id.value = this.data().user_id;
+            })
+
             try {
-                const response = await axios.get('profile/' + id)
+                const response = await axios.get(`profile/${id.value}`)
 
                 this.cv = 'http://recruitment.test/docs/' + response.data.data.cv
 
@@ -118,7 +191,14 @@ export default {
                 })
             }
         },
-        async accept(id) {
+        async accept() {
+            let dt = this.$refs.table.dt();
+            let id = document.getElementById("idApp")
+
+            dt.rows({ selected: true }).every(function () {
+                id.value = this.data().id;
+            })
+
             try {
                 Swal.fire({
                 title: 'Anda Yakin ingin menerima pelamar ini?',
@@ -130,7 +210,7 @@ export default {
                 reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        axios.post('accept-applicant', {id: id})
+                        axios.post('accept-applicant', {id: id.value})
                         .then(res => {
                             Swal.fire({
                                 icon: "success",
@@ -138,7 +218,7 @@ export default {
                                 text: res.data.message,
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    this.$router.go()
+                                    this.render()
                                 }
                             })
                         })
@@ -152,7 +232,14 @@ export default {
                 })
             }
         },
-        async reject(id) {
+        async reject() {
+            let dt = this.$refs.table.dt();
+            let id = document.getElementById("idApp")
+
+            dt.rows({ selected: true }).every(function () {
+                id.value = this.data().id;
+            })
+
             try {
                 Swal.fire({
                 title: 'Anda Yakin ingin menolak pelamar ini?',
@@ -164,7 +251,7 @@ export default {
                 reverseButtons: false
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        axios.post('reject-applicant', {id: id})
+                        axios.post('reject-applicant', {id: id.value})
                         .then(res => {
                             Swal.fire({
                                 icon: "success",
@@ -172,7 +259,7 @@ export default {
                                 text: res.data.message,
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    this.$router.go()
+                                    this.render()
                                 }
                             })
                         })
@@ -185,11 +272,24 @@ export default {
                     text: "Server error, silahkan muat ulang website!",
                 })
             }
+        },
+        async render(){
+            try{
+                const response = await axios.get('status')
+
+                this.applicant = response.data.data
+
+                Swal.close()
+            } catch(e) {
+                Swal.close()
+
+            }
         }
     },
-    components: { DashboardNavbar, DashboardSidebar, DashboardFooter }
+    components: { DashboardNavbar, DashboardSidebar, DashboardFooter, DataTable }
 }
 </script>
 
 <style>
+@import 'datatables.net-bs5';
 </style>
