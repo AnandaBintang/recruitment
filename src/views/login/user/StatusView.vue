@@ -27,7 +27,11 @@
                                             <td>{{ index + 1 }}</td>
                                             <td>{{ statuses.created_at }}</td>
                                             <td>{{ statuses.position }}</td>
-                                            <td><span class="badge bg-light text-dark">{{ statuses.status }}</span></td>
+                                            <td>
+                                                <span v-if="statuses.status == 'Accepted'" class="badge bg-success text-light">{{ statuses.status }}</span>
+                                                <span v-else-if="statuses.status == 'Rejected'" class="badge bg-danger text-light">{{ statuses.status }}</span>
+                                                <span v-else class="badge bg-light text-dark">{{ statuses.status }}</span>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -71,6 +75,7 @@ export default {
         try {
             const status = await axios.get('status/' + this.data.id)
             this.status = status.data.data
+
             Swal.close();
         } catch {
             Swal.close();

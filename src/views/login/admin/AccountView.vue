@@ -90,8 +90,8 @@
                                 </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeModal" @click.prevent="render()">Close</button>
-                            <button type="submit" class="btn btn-primary">Input</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="closeModal" @click.prevent="render()">Close</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
                         </div>
                         </div>
                     </div>
@@ -309,16 +309,19 @@ export default {
             dt.rows({ selected: true }).every(function () {
                 id.value = this.data().id;
             })
-            this.id = parseInt(id.value)
-            this.editForm = true
 
-            const res = await axios.get(`user/${this.id}`)
+            if(id.value) {
+                this.id = parseInt(id.value)
+                this.editForm = true
 
-            this.form.username = res.data.data.name
-            this.form.email = res.data.data.email
-            this.form.phone = res.data.data.phone_number
+                const res = await axios.get(`user/${this.id}`)
 
-            this.openForm()
+                this.form.username = res.data.data.name
+                this.form.email = res.data.data.email
+                this.form.phone = res.data.data.phone_number
+
+                this.openForm()
+            }
         },
         async resetPassword(id){
             Swal.fire({
@@ -349,42 +352,56 @@ export default {
             })
         },
         async remove(){
-            Swal.fire({
-                title: 'Anda Yakin ingin Menghapus User?',
-                icon: 'warning',
-                showCancelButton: true,
-                cancelButtonColor: '#22bb33',
-                confirmButtonText: 'Yakin',
-                confirmButtonColor: '#d33',
-                reverseButtons: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        let dt = this.$refs.table.dt();
+            let dt = this.$refs.table.dt();
+            let id = document.getElementById("idUser")
 
-                        dt.rows({ selected: true }).every(function () {
-                            let selectedData = this.data();
-                            axios.delete('user/' + selectedData.id)
-                            .then(res => {
-                                Swal.fire({
-                                    icon: "success",
-                                    title: "Success!",
-                                    text: res.data.message,
-                                })
-                            }).catch(() => {
-                                Swal.fire({
-                                    icon: "error",
-                                    title: "Failed!",
-                                    text: "Server error, silahkan muat ulang website!",
-                                })
-                            })
-                        });
-
-                        this.render()
-                    }
+            dt.rows({ selected: true }).every(function () {
+                id.value = this.data().id;
             })
+            
+            if(id.value) {
+                Swal.fire({
+                    title: 'Anda Yakin ingin Menghapus User?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    cancelButtonColor: '#22bb33',
+                    confirmButtonText: 'Yakin',
+                    confirmButtonColor: '#d33',
+                    reverseButtons: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            let dt = this.$refs.table.dt();
+
+                            dt.rows({ selected: true }).every(function () {
+                                let selectedData = this.data();
+                                axios.delete('user/' + selectedData.id)
+                                .then(res => {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Success!",
+                                        text: res.data.message,
+                                    })
+                                }).catch(() => {
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Failed!",
+                                        text: "Server error, silahkan muat ulang website!",
+                                    })
+                                })
+                            });
+
+                            this.render()
+                        } else {
+                            this.render()
+                        }
+                })
+            }
         },
         async render() {
             const render = await axios.get('get-level/' + this.level)
+
+            let id = document.getElementById("idUser")
+            id.value = null
 
             this.user = render.data.data
             this.editForm = false

@@ -63,7 +63,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="closeModal" @click.prevent="render()">Close</button>
-                            <button type="submit" class="btn btn-primary">Input</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
                         </div>
                         </div>
                     </div>
@@ -239,15 +239,18 @@ export default {
             dt.rows({ selected: true }).every(function () {
                 id.value = this.data().id;
             })
-            this.id = parseInt(id.value)
-            this.editForm = true
 
-            const res = await axios.get(`job/${this.id}`)
-
-            this.form.position = res.data.data.position
-            this.form.minVal = res.data.data.minimum_value
-
-            this.openForm()
+            if(id.value) {
+                this.id = parseInt(id.value)
+                this.editForm = true
+    
+                const res = await axios.get(`job/${this.id}`)
+    
+                this.form.position = res.data.data.position
+                this.form.minVal = res.data.data.minimum_value
+    
+                this.openForm()
+            }
         },
         async resetPassword(id){
             Swal.fire({
@@ -278,42 +281,54 @@ export default {
             })
         },
         async remove(){
-            Swal.fire({
-                title: 'Anda Yakin ingin Menghapus Lowongan Pekerjaan?',
-                icon: 'warning',
-                showCancelButton: true,
-                cancelButtonColor: '#22bb33',
-                confirmButtonText: 'Yakin',
-                confirmButtonColor: '#d33',
-                reverseButtons: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        let dt = this.$refs.table.dt();
+            let dt = this.$refs.table.dt();
+            let id = document.getElementById("idJob")
 
-                        dt.rows({ selected: true }).every(function () {
-                            let selectedData = this.data();
-                            axios.delete(`job/${selectedData.id}`)
-                            .then(res => {
-                                Swal.fire({
-                                    icon: "success",
-                                    title: "Success!",
-                                    text: res.data.message,
-                                })
-                            }).catch(() => {
-                                Swal.fire({
-                                    icon: "error",
-                                    title: "Failed!",
-                                    text: "Server error, silahkan muat ulang website!"
-                                })
-                            })
-                        });
-
-                        this.render()
-                    }
+            dt.rows({ selected: true }).every(function () {
+                id.value = this.data().id;
             })
+            
+            if(id.value) {
+                Swal.fire({
+                    title: 'Anda Yakin ingin Menghapus Lowongan Pekerjaan?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    cancelButtonColor: '#22bb33',
+                    confirmButtonText: 'Yakin',
+                    confirmButtonColor: '#d33',
+                    reverseButtons: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            dt.rows({ selected: true }).every(function () {
+                                let selectedData = this.data();
+                                axios.delete(`job/${selectedData.id}`)
+                                .then(res => {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Success!",
+                                        text: res.data.message,
+                                    })
+                                }).catch(() => {
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Failed!",
+                                        text: "Server error, silahkan muat ulang website!"
+                                    })
+                                })
+                            });
+    
+                            this.render()
+                        } else {
+                            this.render()
+                        }
+                })
+            }
         },
         async render() {
             const render = await axios.get('job')
+
+            let id = document.getElementById("idJob")
+            id.value = null
 
             this.vacancy = render.data.data
             this.editForm = false

@@ -49,7 +49,7 @@
                     <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5" id="vacancyInfo">Informasi Pelamar Kerja</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click.prevent="render()"></button>
                     </div>
                     <div class="modal-body">
                         <a :href="cv">Download CV</a>
@@ -57,7 +57,7 @@
                         <h5>Nilai Tes Tulis :</h5>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click.prevent="render()">Close</button>
                     </div>
                     </div>
                 </div>
@@ -176,19 +176,24 @@ export default {
                 id.value = this.data().user_id;
             })
 
-            try {
-                const response = await axios.get(`profile/${id.value}`)
+            if(id.value) {
+                try {
+                    const response = await axios.get(`profile/${id.value}`)
 
-                this.cv = 'http://recruitment.test/docs/' + response.data.data.cv
+                    this.cv = 'http://recruitment.test/docs/' + response.data.data.cv
 
-                const applicantInfo = new Modal('#applicantInfo', {})
-                applicantInfo.show()
-            } catch {
-                Swal.fire({
-                    icon: "error",
-                    title: "Failed!",
-                    text: "Server error, silahkan muat ulang website!",
-                })
+                    const applicantInfo = new Modal('#applicantInfo', {
+                        keyboard: false
+                    })
+
+                    applicantInfo.show()
+                } catch {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Failed!",
+                        text: "Server error, silahkan muat ulang website!",
+                    })
+                }
             }
         },
         async accept() {
@@ -199,37 +204,41 @@ export default {
                 id.value = this.data().id;
             })
 
-            try {
-                Swal.fire({
-                title: 'Anda Yakin ingin menerima pelamar ini?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#22bb33',
-                confirmButtonText: 'Yakin',
-                cancelButtonColor: '#d33',
-                reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        axios.post('accept-applicant', {id: id.value})
-                        .then(res => {
-                            Swal.fire({
-                                icon: "success",
-                                title: "Success!",
-                                text: res.data.message,
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    this.render()
-                                }
+            if(id.value) {
+                try {
+                    Swal.fire({
+                    title: 'Anda Yakin ingin menerima pelamar ini?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#22bb33',
+                    confirmButtonText: 'Yakin',
+                    cancelButtonColor: '#d33',
+                    reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            axios.post('accept-applicant', {id: id.value})
+                            .then(res => {
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Success!",
+                                    text: res.data.message,
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        this.render()
+                                    }
+                                })
                             })
-                        })
-                    }
-                })
-            } catch {
-                Swal.fire({
-                    icon: "error",
-                    title: "Failed!",
-                    text: "Server error, silahkan muat ulang website!",
-                })
+                        } else {
+                            this.render()
+                        }
+                    })
+                } catch {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Failed!",
+                        text: "Server error, silahkan muat ulang website!",
+                    })
+                }
             }
         },
         async reject() {
@@ -240,37 +249,41 @@ export default {
                 id.value = this.data().id;
             })
 
-            try {
-                Swal.fire({
-                title: 'Anda Yakin ingin menolak pelamar ini?',
-                icon: 'warning',
-                showCancelButton: true,
-                cancelButtonColor: '#22bb33',
-                confirmButtonText: 'Yakin',
-                confirmButtonColor: '#d33',
-                reverseButtons: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        axios.post('reject-applicant', {id: id.value})
-                        .then(res => {
-                            Swal.fire({
-                                icon: "success",
-                                title: "Success!",
-                                text: res.data.message,
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    this.render()
-                                }
+            if(id.value) {
+                try {
+                    Swal.fire({
+                    title: 'Anda Yakin ingin menolak pelamar ini?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    cancelButtonColor: '#22bb33',
+                    confirmButtonText: 'Yakin',
+                    confirmButtonColor: '#d33',
+                    reverseButtons: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            axios.post('reject-applicant', {id: id.value})
+                            .then(res => {
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Success!",
+                                    text: res.data.message,
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        this.render()
+                                    }
+                                })
                             })
-                        })
-                    }
-                })
-            } catch {
-                Swal.fire({
-                    icon: "error",
-                    title: "Failed!",
-                    text: "Server error, silahkan muat ulang website!",
-                })
+                        } else {
+                            this.render()
+                        }
+                    })
+                } catch {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Failed!",
+                        text: "Server error, silahkan muat ulang website!",
+                    })
+                }
             }
         },
         async render(){
@@ -278,6 +291,11 @@ export default {
                 const response = await axios.get('status')
 
                 this.applicant = response.data.data
+
+                let idApp = document.getElementById("idApp")
+                let idUser = document.getElementById("idUser")
+                idApp.value = null
+                idUser.value = null
 
                 Swal.close()
             } catch(e) {
