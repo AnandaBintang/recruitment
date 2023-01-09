@@ -9,7 +9,7 @@
                     <h6 class="dropdown-header d-flex align-items-center">
                         <img class="dropdown-user-img" :src="previewImage" />
                         <div class="dropdown-user-details">
-                            <div class="dropdown-user-details-name">{{ data.name }}</div>
+                            <div class="dropdown-user-details-name">{{ data.username }}</div>
                             <div class="dropdown-user-details-email">{{ data.email }}</div>
                         </div>
                     </h6>
@@ -47,17 +47,20 @@ export default {
         const response = await axios.get('get-token')
         this.data = response.data.data
 
-        try {
-            const profile = await axios.get('profile/' + this.data.id);
-            checkData = profile.data.data
+        const profile = await axios.get('profile/' + this.data.id);
+        checkData = profile.data.data
 
-            if(checkData) {
-                this.previewImage = 'http://recruitment.test/images/' + checkData.image
-            } else {
-                return
-            }
-        } catch {
-            return
+        if(checkData) {
+            this.previewImage = 'http://recruitment.test/images/' + checkData.image
+        }
+
+        const sidebarToggle = document.body.querySelector('#sidebarToggle');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', event => {
+                event.preventDefault();
+                document.body.classList.toggle('sidenav-toggled');
+                localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sidenav-toggled'));
+            });
         }
     },
     methods: {

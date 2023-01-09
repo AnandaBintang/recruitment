@@ -80,11 +80,11 @@
                             })
                         }
                     })
-                } catch (e) {
+                } catch {
                     Swal.fire({
                         icon: "error",
-                        title: e.response.data.status,
-                        text: e.response.data.msg,
+                        title: "Failed!",
+                        text: "Server error, silahkan muat ulang website!",
                     })
                 }
             }

@@ -1,68 +1,70 @@
 <template>
-    <DashboardNavbar/>
-    <div id="layoutSidenav">
-        <DashboardSidebar/>
-        <div id="layoutSidenav_content">
-            <main>
-                <div class="container-xl px-4 mt-4">
-                    <nav class="nav nav-borders">
-                        <a class="nav-link active">Pelamar</a>
-                    </nav>
-                    <hr class="mt-0 mb-4" />
-                    <div class="card mb-4">
-                        <div class="card-header">Lamaran Pekerjaan</div>
-                        <div class="card-body p-0 mb-3">
-                            <div class="row">
-                                <div class="col-lg-10 offset-lg-1">
-                                    <div class="table-responsive table-billing-history mt-3">
-                                        <DataTable
-                                            class="table table-hover display" 
-                                            :data="applicant"
-                                            :columns="columns"
-                                            :options="{responsive: true, select: true, autoWidth: false,dom: 'Bflrtip', buttons: buttons, }"
-                                            ref="table"
-                                        >
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Pelamar</th>
-                                                    <th>Posisi</th>
-                                                </tr>
-                                            </thead>
-                                        </DataTable>
-                                        <div class="mt-3 mb-3">
-                                            <button class="btn btn-danger btn-sm" type="submit" @click.prevent="reject()"><i class="fa fa-xmark"></i></button> |
-                                            <button class="btn btn-warning btn-sm" type="submit" @click.prevent="openInfo()"><i class="fa fa-info"></i></button> |
-                                            <button class="btn btn-success btn-sm" type="submit" @click.prevent="accept()"><i class="fa fa-check"></i></button>
+    <div class="nav-fixed">
+        <DashboardNavbar/>
+        <div id="layoutSidenav">
+            <DashboardSidebar/>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-xl px-4 mt-4">
+                        <nav class="nav nav-borders">
+                            <a class="nav-link active">Pelamar</a>
+                        </nav>
+                        <hr class="mt-0 mb-4" />
+                        <div class="card mb-4">
+                            <div class="card-header">Lamaran Pekerjaan</div>
+                            <div class="card-body p-0 mb-3">
+                                <div class="row">
+                                    <div class="col-lg-10 offset-lg-1">
+                                        <div class="table-responsive table-billing-history mt-3">
+                                            <DataTable
+                                                class="table table-hover display" 
+                                                :data="applicant"
+                                                :columns="columns"
+                                                :options="{responsive: true, select: true, autoWidth: false,dom: 'Bflrtip', buttons: buttons, }"
+                                                ref="table"
+                                            >
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Pelamar</th>
+                                                        <th>Posisi</th>
+                                                    </tr>
+                                                </thead>
+                                            </DataTable>
+                                            <div class="mt-3 mb-3">
+                                                <button class="btn btn-danger btn-sm" type="submit" @click.prevent="reject()"><i class="fa fa-xmark"></i></button> |
+                                                <button class="btn btn-warning btn-sm" type="submit" @click.prevent="openInfo()"><i class="fa fa-info"></i></button> |
+                                                <button class="btn btn-success btn-sm" type="submit" @click.prevent="accept()"><i class="fa fa-check"></i></button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </main>
+                <input type="hidden" name="idApp" id="idApp" readonly>
+                <input type="hidden" name="idUser" id="idUser" readonly>
+                <div class="modal fade" id="applicantInfo" tabindex="-1" aria-labelledby="vacancyInfo" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="vacancyInfo">Informasi Pelamar Kerja</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click.prevent="render()"></button>
+                        </div>
+                        <div class="modal-body">
+                            <a :href="cv">Download CV</a>
+                            <hr>
+                            <h5>Nilai Tes Tulis :</h5>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click.prevent="render()">Close</button>
+                        </div>
+                        </div>
+                    </div>
                 </div>
-            </main>
-            <input type="hidden" name="idApp" id="idApp" readonly>
-            <input type="hidden" name="idUser" id="idUser" readonly>
-            <div class="modal fade" id="applicantInfo" tabindex="-1" aria-labelledby="vacancyInfo" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="vacancyInfo">Informasi Pelamar Kerja</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click.prevent="render()"></button>
-                    </div>
-                    <div class="modal-body">
-                        <a :href="cv">Download CV</a>
-                        <hr>
-                        <h5>Nilai Tes Tulis :</h5>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click.prevent="render()">Close</button>
-                    </div>
-                    </div>
-                </div>
+                <DashboardFooter/>
             </div>
-            <DashboardFooter/>
         </div>
     </div>
 </template>
@@ -155,7 +157,7 @@ export default {
             this.applicant = response.data.data
 
             Swal.close()
-        } catch(e) {
+        } catch {
             Swal.close()
 
         }
@@ -298,7 +300,7 @@ export default {
                 idUser.value = null
 
                 Swal.close()
-            } catch(e) {
+            } catch {
                 Swal.close()
 
             }

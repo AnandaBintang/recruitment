@@ -51,7 +51,7 @@
             <div class="sidenav-footer">
                 <div class="sidenav-footer-content">
                     <div class="sidenav-footer-subtitle">Logged in as:</div>
-                    <div class="sidenav-footer-title">{{ data.name }}</div>
+                    <div class="sidenav-footer-title">{{ data.username }}</div>
                 </div>
             </div>
         </nav>

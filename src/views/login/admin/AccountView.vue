@@ -1,103 +1,105 @@
 <template>
-    <DashboardNavbar/>
-    <div id="layoutSidenav">
-        <DashboardSidebar/>
-        <div id="layoutSidenav_content">
-            <main>
-                <div class="container-xl px-4 mt-4">
-                    <nav class="nav nav-borders">
-                        <a class="nav-link active">Data User</a>
-                    </nav>
-                    <hr class="mt-0 mb-4" />
-                    <div class="card mb-4">
-                        <div class="card-header">Data {{ level }}</div>
-                        <div class="card-body p-0 mb-3">
-                            <div class="row">
-                                <div class="col-lg-10 offset-lg-1">
-                                    <div class="table-responsive table-billing-history mt-3">
-                                        <DataTable
-                                            class="table table-hover display" 
-                                            :data="user"
-                                            :columns="columns"
-                                            :options="{responsive: true, select: true, autoWidth: false,dom: 'Bflrtip', buttons: buttons, }"
-                                            ref="table"
-                                        >
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Username</th>
-                                                    <th>Email</th>
-                                                    <th>Status</th>
-                                                    <th>Nomor Telepon</th>
-                                                </tr>
-                                            </thead>
-                                        </DataTable>
-                                        <div class="mt-3 mb-3">
-                                            <a class="btn btn-sm btn-primary" @click.prevent="openForm()"><i class="fa fa-plus"></i></a> |
-                                            <button class="btn btn-sm btn-danger" @click.prevent="remove()" title="Delete User"><i class="fa fa-trash"></i></button> |
-                                            <button class="btn btn-sm btn-warning" @click.prevent="edit()" title="Edit User"><i class="fa fa-pen"></i></button>
+    <div class="nav-fixed">
+        <DashboardNavbar/>
+        <div id="layoutSidenav">
+            <DashboardSidebar/>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-xl px-4 mt-4">
+                        <nav class="nav nav-borders">
+                            <a class="nav-link active">Data User</a>
+                        </nav>
+                        <hr class="mt-0 mb-4" />
+                        <div class="card mb-4">
+                            <div class="card-header">Data {{ level }}</div>
+                            <div class="card-body p-0 mb-3">
+                                <div class="row">
+                                    <div class="col-lg-10 offset-lg-1">
+                                        <div class="table-responsive table-billing-history mt-3">
+                                            <DataTable
+                                                class="table table-hover display" 
+                                                :data="user"
+                                                :columns="columns"
+                                                :options="{responsive: true, select: true, autoWidth: false,dom: 'Bflrtip', buttons: buttons, }"
+                                                ref="table"
+                                            >
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Username</th>
+                                                        <th>Email</th>
+                                                        <th>Status</th>
+                                                        <th>Nomor Telepon</th>
+                                                    </tr>
+                                                </thead>
+                                            </DataTable>
+                                            <div class="mt-3 mb-3">
+                                                <a class="btn btn-sm btn-primary" @click.prevent="openForm()"><i class="fa fa-plus"></i></a> |
+                                                <button class="btn btn-sm btn-danger" @click.prevent="remove()" title="Delete User"><i class="fa fa-trash"></i></button> |
+                                                <button class="btn btn-sm btn-warning" @click.prevent="edit()" title="Edit User"><i class="fa fa-pen"></i></button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </main>
+                <input type="hidden" name="idUser" id="idUser" readonly>
+                <div class="modal fade" id="accountForm" data-bs-backdrop="static" tabindex="-1" aria-labelledby="accountForm" aria-hidden="true">
+                    <form @submit.prevent="input()">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5">Data User</h1>
+                                <button type="button" class="btn-close" @click.prevent="render()" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="col-form-label">Username</label>
+                                        <input type="text" class="form-control" v-model="this.form.username" required placeholder="Enter a Username">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="col-form-label">Email</label>
+                                        <input type="email" class="form-control" v-model="this.form.email" required placeholder="Enter an Email">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="col-form-label">Nomor Telepon</label>
+                                        <MazPhoneNumberInput
+                                            v-model="this.form.phone"
+                                            required
+                                            fetch-country
+                                            show-code-on-list
+                                            color="info"
+                                            :preferred-countries="['ID', 'FR', 'BE', 'DE', 'US', 'GB']"
+                                            :ignored-countries="['AC']"
+                                        />
+                                    </div>
+                                    <div v-if="!editForm">
+                                        <div class="mb-3">
+                                            <label class="col-form-label">Password</label>
+                                            <input type="password" class="form-control" v-model="this.form.password" required placeholder="Enter a Password">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="col-form-label">Re - Enter Password</label>
+                                            <input type="password" class="form-control" v-model="this.form.password_confirm" required placeholder="Re-Enter your Password">
+                                        </div>
+                                    </div>
+                                    <div v-else>
+                                        <button type="button" class="btn btn-danger-soft text-danger btn-sm mt-3 mb-2" @click.prevent="resetPassword(id)">Reset Password</button>
+                                        <div class="small text-muted"><i class="fa-solid fa-triangle-exclamation"></i> The reset password will return it to "password"</div>
+                                    </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="closeModal" @click.prevent="render()">Close</button>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </main>
-            <input type="hidden" name="idUser" id="idUser" readonly>
-            <div class="modal fade" id="accountForm" data-bs-backdrop="static" tabindex="-1" aria-labelledby="accountForm" aria-hidden="true">
-                <form @submit.prevent="input()">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5">Data User</h1>
-                            <button type="button" class="btn-close" @click.prevent="render()" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                                <div class="mb-3">
-                                    <label class="col-form-label">Username</label>
-                                    <input type="text" class="form-control" v-model="this.form.username" required placeholder="Enter a Username">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="col-form-label">Email</label>
-                                    <input type="email" class="form-control" v-model="this.form.email" required placeholder="Enter an Email">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="col-form-label">Nomor Telepon</label>
-                                    <MazPhoneNumberInput
-                                        v-model="this.form.phone"
-                                        required
-                                        fetch-country
-                                        show-code-on-list
-                                        color="info"
-                                        :preferred-countries="['ID', 'FR', 'BE', 'DE', 'US', 'GB']"
-                                        :ignored-countries="['AC']"
-                                    />
-                                </div>
-                                <div v-if="!editForm">
-                                    <div class="mb-3">
-                                        <label class="col-form-label">Password</label>
-                                        <input type="password" class="form-control" v-model="this.form.password" required placeholder="Enter a Password">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="col-form-label">Re - Enter Password</label>
-                                        <input type="password" class="form-control" v-model="this.form.password_confirm" required placeholder="Re-Enter your Password">
-                                    </div>
-                                </div>
-                                <div v-else>
-                                    <button type="button" class="btn btn-danger-soft text-danger btn-sm mt-3 mb-2" @click.prevent="resetPassword(id)">Reset Password</button>
-                                    <div class="small text-muted"><i class="fa-solid fa-triangle-exclamation"></i> The reset password will return it to "password"</div>
-                                </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="closeModal" @click.prevent="render()">Close</button>
-                            <button type="submit" class="btn btn-primary">Save</button>
-                        </div>
-                        </div>
-                    </div>
-                </form>
+                <DashboardFooter/>
             </div>
-            <DashboardFooter/>
         </div>
     </div>
 </template>
@@ -141,7 +143,7 @@ export default {
             columns:[
                 {data:null, render: function(data,type,row,meta)
                     {return `${meta.row+1}`}},
-                {data:'name'},
+                {data:'username'},
                 {data:'email'},
                 {data:'status'},
                 {data:'phone_number'},
@@ -203,7 +205,7 @@ export default {
             this.user = response.data.data
             
             Swal.close()
-        } catch(e) {
+        } catch {
             Swal.close()
         }
     },
@@ -223,7 +225,7 @@ export default {
             this.user = response.data.data
             
             Swal.close()
-        } catch(e) {
+        } catch {
             Swal.close()
         }
     },
@@ -262,11 +264,11 @@ export default {
                         document.getElementById('closeModal').click()
 
                         this.render()
-                    } catch (e) {
+                    } catch {
                         Swal.fire({
-                            icon: 'error',
-                            title: e.response.data.status,
-                            text: e.response.data.message,
+                            icon: "error",
+                            title: "Failed!",
+                            text: "Server error, silahkan muat ulang website!",
                         })
                     }
                 } else {
@@ -293,11 +295,11 @@ export default {
                     document.getElementById('closeModal').click()
 
                     this.render()
-                } catch(e) {
+                } catch {
                     Swal.fire({
-                        icon: 'error',
-                        title: e.response.data.status,
-                        text: e.response.data.message,
+                        icon: "error",
+                        title: "Failed!",
+                        text: "Server error, silahkan muat ulang website!",
                     })
                 }
             }
@@ -341,11 +343,11 @@ export default {
                                 title: response.data.status,
                                 text: response.data.message,
                             })
-                        }).catch(e => {
+                        }).catch(() => {
                             Swal.fire({
-                                icon: 'error',
-                                title: e.response.data.status,
-                                text: e.response.data.message,
+                                icon: "error",
+                                title: "Failed!",
+                                text: "Server error, silahkan muat ulang website!",
                             })
                         })
                     }

@@ -1,75 +1,77 @@
 <template>
-    <DashboardNavbar/>
-    <div id="layoutSidenav">
-        <DashboardSidebar/>
-        <div id="layoutSidenav_content">
-            <main>
-                <div class="container-xl px-4 mt-4">
-                    <nav class="nav nav-borders">
-                        <a class="nav-link active">Lowongan Pekerjaan</a>
-                    </nav>
-                    <hr class="mt-0 mb-4" />
-                    <div class="card mb-4">
-                        <div class="card-header">Daftar Lowongan Pekerjaan</div>
-                        <div class="card-body p-0 mb-3">
-                            <div class="row">
-                                <div class="col-lg-10 offset-lg-1">
-                                    <div class="table-responsive table-billing-history mt-3">
-                                        <DataTable
-                                            class="table table-hover display" 
-                                            :data="vacancy"
-                                            :columns="columns"
-                                            :options="{responsive: true, select: true, autoWidth: false,dom: 'Bflrtip', buttons: buttons, }"
-                                            ref="table"
-                                        >
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Posisi Kerja</th>
-                                                    <th>Nilai Minimal</th>
-                                                </tr>
-                                            </thead>
-                                        </DataTable>
-                                        <div class="mt-3 mb-3">
-                                            <a class="btn btn-sm btn-primary" @click.prevent="openForm()"><i class="fa fa-plus"></i></a> |
-                                            <button class="btn btn-sm btn-danger" @click.prevent="remove()" title="Delete User"><i class="fa fa-trash"></i></button> |
-                                            <button class="btn btn-sm btn-warning" @click.prevent="edit()" title="Edit User"><i class="fa fa-pen"></i></button>
+    <div class="nav-fixed">
+        <DashboardNavbar/>
+        <div id="layoutSidenav">
+            <DashboardSidebar/>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-xl px-4 mt-4">
+                        <nav class="nav nav-borders">
+                            <a class="nav-link active">Lowongan Pekerjaan</a>
+                        </nav>
+                        <hr class="mt-0 mb-4" />
+                        <div class="card mb-4">
+                            <div class="card-header">Daftar Lowongan Pekerjaan</div>
+                            <div class="card-body p-0 mb-3">
+                                <div class="row">
+                                    <div class="col-lg-10 offset-lg-1">
+                                        <div class="table-responsive table-billing-history mt-3">
+                                            <DataTable
+                                                class="table table-hover display" 
+                                                :data="vacancy"
+                                                :columns="columns"
+                                                :options="{responsive: true, select: true, autoWidth: false,dom: 'Bflrtip', buttons: buttons, }"
+                                                ref="table"
+                                            >
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Posisi Kerja</th>
+                                                        <th>Nilai Minimal</th>
+                                                    </tr>
+                                                </thead>
+                                            </DataTable>
+                                            <div class="mt-3 mb-3">
+                                                <a class="btn btn-sm btn-primary" @click.prevent="openForm()"><i class="fa fa-plus"></i></a> |
+                                                <button class="btn btn-sm btn-danger" @click.prevent="remove()" title="Delete User"><i class="fa fa-trash"></i></button> |
+                                                <button class="btn btn-sm btn-warning" @click.prevent="edit()" title="Edit User"><i class="fa fa-pen"></i></button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </main>
+                <input type="hidden" name="idJob" id="idJob" readonly>
+                <div class="modal fade" id="vacancyForm" data-bs-backdrop="static" tabindex="-1" aria-labelledby="vacancyForm" aria-hidden="true">
+                    <form @submit.prevent="input()">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5">Data Lowongan Kerja</h1>
+                                <button type="button" class="btn-close" @click.prevent="render()" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="col-form-label">Posisi</label>
+                                        <input type="text" class="form-control" v-model="this.form.position" required placeholder="Enter a Position Name">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="col-form-label">Nilai Minimal</label>
+                                        <input type="number" class="form-control" v-model="this.form.minVal" required placeholder="Enter a Minimum Value">
+                                    </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="closeModal" @click.prevent="render()">Close</button>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </main>
-            <input type="hidden" name="idJob" id="idJob" readonly>
-            <div class="modal fade" id="vacancyForm" data-bs-backdrop="static" tabindex="-1" aria-labelledby="vacancyForm" aria-hidden="true">
-                <form @submit.prevent="input()">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5">Data Lowongan Kerja</h1>
-                            <button type="button" class="btn-close" @click.prevent="render()" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                                <div class="mb-3">
-                                    <label class="col-form-label">Posisi</label>
-                                    <input type="text" class="form-control" v-model="this.form.position" required placeholder="Enter a Position Name">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="col-form-label">Nilai Minimal</label>
-                                    <input type="number" class="form-control" v-model="this.form.minVal" required placeholder="Enter a Minimum Value">
-                                </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="closeModal" @click.prevent="render()">Close</button>
-                            <button type="submit" class="btn btn-primary">Save</button>
-                        </div>
-                        </div>
-                    </div>
-                </form>
+                <DashboardFooter/>
             </div>
-            <DashboardFooter/>
         </div>
     </div>
 </template>
@@ -165,7 +167,7 @@ export default {
             this.vacancy = response.data.data
             
             Swal.close()
-        } catch(e) {
+        } catch {
             Swal.close()
         }
     },
@@ -200,11 +202,11 @@ export default {
                     document.getElementById('closeModal').click()
 
                     this.render()
-                } catch (e) {
+                } catch {
                     Swal.fire({
-                        icon: 'error',
-                        title: e.response.data.status,
-                        text: e.response.data.message,
+                        icon: "error",
+                        title: "Failed!",
+                        text: "Server error, silahkan muat ulang website!",
                     })
                 }
             } else {
@@ -223,11 +225,11 @@ export default {
                     document.getElementById('closeModal').click()
 
                     this.render()
-                } catch(e) {
+                } catch {
                     Swal.fire({
-                        icon: 'error',
-                        title: e.response.data.status,
-                        text: e.response.data.message,
+                        icon: "error",
+                        title: "Failed!",
+                        text: "Server error, silahkan muat ulang website!",
                     })
                 }
             }
@@ -270,11 +272,11 @@ export default {
                                 title: response.data.status,
                                 text: response.data.message,
                             })
-                        }).catch(e => {
+                        }).catch(() => {
                             Swal.fire({
-                                icon: 'error',
-                                title: e.response.data.status,
-                                text: e.response.data.message,
+                                icon: "error",
+                                title: "Failed!",
+                                text: "Server error, silahkan muat ulang website!",
                             })
                         })
                     }

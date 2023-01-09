@@ -1,70 +1,72 @@
 <template>
-    <DashboardNavbar/>
-    <div id="layoutSidenav">
-        <DashboardSidebar/>
-        <div id="layoutSidenav_content">
-            <main>
-                <div class="container-xl px-4 mt-4">
-                    <nav class="nav nav-borders">
-                        <a class="nav-link active ms-0">Account</a>
-                    </nav>
-                    <hr class="mt-0 mb-4" />
-                    <div class="row">
-                        <div class="col-xl-4">
-                            <form @submit.prevent="updatePassword">
-                                <div class="card mb-4">
-                                    <div class="card-header">Password Management</div>
-                                    <div class="card-body">
-                                        <div class="mb-3">
-                                            <label class="small mb-1" for="oldPassword">Old Password</label>
-                                            <input class="form-control" id="oldPassword" type="password" v-model="oldPassword" placeholder="Enter your Old Password"/>
+    <div class="nav-fixed">
+        <DashboardNavbar/>
+        <div id="layoutSidenav">
+            <DashboardSidebar/>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-xl px-4 mt-4">
+                        <nav class="nav nav-borders">
+                            <a class="nav-link active ms-0">Account</a>
+                        </nav>
+                        <hr class="mt-0 mb-4" />
+                        <div class="row">
+                            <div class="col-xl-4">
+                                <form @submit.prevent="updatePassword">
+                                    <div class="card mb-4">
+                                        <div class="card-header">Password Management</div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="small mb-1" for="oldPassword">Old Password</label>
+                                                <input class="form-control" id="oldPassword" type="password" v-model="oldPassword" placeholder="Enter your Old Password"/>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="small mb-1" for="newPassword">New Password</label>
+                                                <input class="form-control" id="newPassword" type="password" v-model="newPassword" placeholder="Enter your New Password"/>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="small mb-1" for="confirmPassword">Confirm Password</label>
+                                                <input class="form-control" id="confirmPassword" type="password" v-model="confirmPassword" placeholder="Enter your New Password again"/>
+                                            </div>
+                                            <button class="btn btn-primary float-end" type="submit">Update Password</button>
                                         </div>
-                                        <div class="mb-3">
-                                            <label class="small mb-1" for="newPassword">New Password</label>
-                                            <input class="form-control" id="newPassword" type="password" v-model="newPassword" placeholder="Enter your New Password"/>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="small mb-1" for="confirmPassword">Confirm Password</label>
-                                            <input class="form-control" id="confirmPassword" type="password" v-model="confirmPassword" placeholder="Enter your New Password again"/>
-                                        </div>
-                                        <button class="btn btn-primary float-end" type="submit">Update Password</button>
                                     </div>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="col-xl-8">
-                            <form @submit.prevent="updateAccount">
-                                <div class="card mb-4">
-                                    <div class="card-header">Account Settings</div>
-                                    <div class="card-body">
-                                        <div class="mb-3">
-                                            <label class="small mb-1" for="inputUsername">Username</label>
-                                            <input class="form-control" id="inputUsername" type="text" v-model="username" placeholder="Enter your Username"/>
+                                </form>
+                            </div>
+                            <div class="col-xl-8">
+                                <form @submit.prevent="updateAccount">
+                                    <div class="card mb-4">
+                                        <div class="card-header">Account Settings</div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="small mb-1" for="inputUsername">Username</label>
+                                                <input class="form-control" id="inputUsername" type="text" v-model="username" placeholder="Enter your Username"/>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="small mb-1" for="inputEmail">Email</label>
+                                                <input class="form-control" id="inputEmail" type="email" v-model="email" placeholder="Enter your Email"/>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="small mb-1" for="telephone">Phone Number</label>
+                                                <MazPhoneNumberInput
+                                                    v-model="phone"
+                                                    fetch-country
+                                                    show-code-on-list
+                                                    color="info"
+                                                    :preferred-countries="['ID', 'FR', 'BE', 'DE', 'US', 'GB']"
+                                                    :ignored-countries="['AC']"
+                                                />
+                                            </div>
+                                            <button class="btn btn-primary float-end" type="submit">Save changes</button>
                                         </div>
-                                        <div class="mb-3">
-                                            <label class="small mb-1" for="inputEmail">Email</label>
-                                            <input class="form-control" id="inputEmail" type="email" v-model="email" placeholder="Enter your Email"/>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="small mb-1" for="telephone">Phone Number</label>
-                                            <MazPhoneNumberInput
-                                                v-model="phone"
-                                                fetch-country
-                                                show-code-on-list
-                                                color="info"
-                                                :preferred-countries="['ID', 'FR', 'BE', 'DE', 'US', 'GB']"
-                                                :ignored-countries="['AC']"
-                                            />
-                                        </div>
-                                        <button class="btn btn-primary float-end" type="submit">Save changes</button>
                                     </div>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </main>
-            <DashboardFooter/>
+                </main>
+                <DashboardFooter/>
+            </div>
         </div>
     </div>
 </template>
@@ -135,11 +137,11 @@ export default {
                     text: response.data.message,
                 })
 
-            } catch(e) {
+            } catch {
                 Swal.fire({
-                    icon: 'error',
-                    title: e.response.data.status,
-                    text: e.response.data.message,
+                    icon: "error",
+                    title: "Failed!",
+                    text: "Server error, silahkan muat ulang website!",
                 })
             }
         },
@@ -165,11 +167,11 @@ export default {
                         }
                     })
 
-                } catch(e) {
+                } catch {
                     Swal.fire({
-                        icon: 'error',
-                        title: e.response.data.status,
-                        text: e.response.data.message,
+                        icon: "error",
+                        title: "Failed!",
+                        text: "Server error, silahkan muat ulang website!",
                     })
                 }
             } else {

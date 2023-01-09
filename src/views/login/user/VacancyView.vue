@@ -1,68 +1,70 @@
 <template>
-    <DashboardNavbar/>
-    <div id="layoutSidenav">
-        <DashboardSidebar/>
-        <div id="layoutSidenav_content">
-            <main>
-                <div class="container-xl px-4 mt-4">
-                    <nav class="nav nav-borders">
-                        <a class="nav-link active">Lowongan</a>
-                    </nav>
-                    <hr class="mt-0 mb-4" />
-                    <div class="card mb-4">
-                        <div class="card-header">Lowongan Pekerjaan</div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive table-billing-history">
-                                <form>
-                                    <table class="table mb-0">
-                                        <thead>
-                                            <tr>
-                                                <th class="border-gray-200" scope="col">#</th>
-                                                <th class="border-gray-200" scope="col">Posisi</th>
-                                                <th class="border-gray-200" scope="col">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr v-for="(jobs, index) in job" :key="jobs.id">
-                                                <td>{{ index + 1 }}</td>
-                                                <td>{{ jobs.position }}</td>
-                                                <td>
-                                                    <button class="btn btn-warning btn-xs" type="submit" @click.prevent="openInfo(jobs.id)"><i class="fa fa-info"></i></button> |
-                                                    <button class="btn btn-success btn-xs" @click.prevent="apply(jobs.id)" type="submit"><i class="fa fa-check"></i></button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </form>
+    <div class="nav-fixed">
+        <DashboardNavbar/>
+        <div id="layoutSidenav">
+            <DashboardSidebar/>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-xl px-4 mt-4">
+                        <nav class="nav nav-borders">
+                            <a class="nav-link active">Lowongan</a>
+                        </nav>
+                        <hr class="mt-0 mb-4" />
+                        <div class="card mb-4">
+                            <div class="card-header">Lowongan Pekerjaan</div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive table-billing-history">
+                                    <form>
+                                        <table class="table mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th class="border-gray-200" scope="col">#</th>
+                                                    <th class="border-gray-200" scope="col">Posisi</th>
+                                                    <th class="border-gray-200" scope="col">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(jobs, index) in job" :key="jobs.id">
+                                                    <td>{{ index + 1 }}</td>
+                                                    <td>{{ jobs.position }}</td>
+                                                    <td>
+                                                        <button class="btn btn-warning btn-xs" type="submit" @click.prevent="openInfo(jobs.id)"><i class="fa fa-info"></i></button> |
+                                                        <button class="btn btn-success btn-xs" @click.prevent="apply(jobs.id)" type="submit"><i class="fa fa-check"></i></button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
+                </main>
+                <div class="modal fade" id="vacancyInfo" tabindex="-1" aria-labelledby="vacancyInfo" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="vacancyInfo">Informasi Lowongan Pekerjaan</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h5>Minimum Requirement</h5>
+                            <ul>
+                                <li v-for="details in detail" :key="details.id">
+                                    {{ details.detail }}
+                                </li>
+                            </ul>
+                            <br>
+                            <h5>Minimum Nilai : {{ minValue }}</h5>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                        </div>
+                    </div>
                 </div>
-            </main>
-            <div class="modal fade" id="vacancyInfo" tabindex="-1" aria-labelledby="vacancyInfo" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="vacancyInfo">Informasi Lowongan Pekerjaan</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <h5>Minimum Requirement</h5>
-                        <ul>
-                            <li v-for="details in detail" :key="details.id">
-                                {{ details.detail }}
-                            </li>
-                        </ul>
-                        <br>
-                        <h5>Minimum Nilai : {{ minValue }}</h5>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                    </div>
-                </div>
+                <DashboardFooter/>
             </div>
-            <DashboardFooter/>
         </div>
     </div>
 </template>
@@ -116,11 +118,7 @@ export default {
                 const response = await axios.get('job')
                 this.job = response.data.data
             } catch {
-                Swal.fire({
-                    icon: "error",
-                    title: "Error!",
-                    text: "Server error, silahkan muat ulang website!",
-                })
+                console.clear()
             }
         },
         async openInfo(id) {
@@ -161,11 +159,11 @@ export default {
                                             title: "Success!",
                                             text: res.data.message,
                                         })
-                                    }).catch(res => {
+                                    }).catch(() => {
                                         Swal.fire({
                                             icon: "error",
                                             title: "Failed!",
-                                            text: res.response.data.message,
+                                            text: "Server error, silahkan muat ulang website!",
                                         })
                                     })
                                 } catch {

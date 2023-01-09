@@ -95,11 +95,11 @@
                         router.push({
                             name: 'Login',
                         })
-                    } catch (e) {
+                    } catch {
                         Swal.fire({
-                            icon: 'error',
-                            title: e.response.data.status,
-                            text: e.response.data.message,
+                            icon: "error",
+                            title: "Failed!",
+                            text: "Server error, silahkan muat ulang website!",
                         })
                     }
                 } else {
