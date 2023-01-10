@@ -163,7 +163,7 @@ export default {
                                         Swal.fire({
                                             icon: "error",
                                             title: "Failed!",
-                                            text: "Server error, silahkan muat ulang website!",
+                                            text: "Anda sudah Apply di Lowongan Kerja ini!",
                                         })
                                     })
                                 } catch {

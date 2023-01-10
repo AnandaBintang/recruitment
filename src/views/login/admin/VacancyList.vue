@@ -53,14 +53,29 @@
                                 <button type="button" class="btn-close" @click.prevent="render()" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                    <div class="mb-3">
-                                        <label class="col-form-label">Posisi</label>
-                                        <input type="text" class="form-control" v-model="this.form.position" required placeholder="Enter a Position Name">
+                                <div class="mb-3">
+                                    <label class="col-form-label">Posisi</label>
+                                    <input type="text" class="form-control" v-model="this.form.position" required placeholder="Enter a Position Name">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="col-form-label">Nilai Minimal</label>
+                                    <input type="number" class="form-control" v-model="this.form.minVal" required placeholder="Enter a Minimum Value">
+                                </div>
+                                <hr>
+                                <div class="mb-3">
+                                    <label class="col-form-label">Syarat Khusus</label>
+                                    <div class="mb-3" v-for="(input, index) in info" :key="`listInput-${index}`">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <input type="text" class="form-control" v-model="input.detail" required placeholder="Enter a Minimum Requirement">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <button class="btn btn-sm btn-success" @click.prevent="addField(info)"><i class="fas fa-plus-circle"></i></button> |
+                                                <button class="btn btn-sm btn-danger" @click.prevent="removeField(index, info)"><i class="fas fa-minus"></i></button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label class="col-form-label">Nilai Minimal</label>
-                                        <input type="number" class="form-control" v-model="this.form.minVal" required placeholder="Enter a Minimum Value">
-                                    </div>
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="closeModal" @click.prevent="render()">Close</button>
@@ -102,6 +117,7 @@ export default {
         return{
             vacancy: ref([]),
             id: null,
+            info: [{detail:''}],
             form: {
                 position: '',
                 minVal: '',
@@ -190,7 +206,8 @@ export default {
                 try {
                     const response = await axios.post('job', {
                         position: this.form.position,
-                        minimum_value: this.form.minVal
+                        minimum_value: this.form.minVal,
+                        info: this.info
                     })
     
                     Swal.fire({
@@ -213,7 +230,8 @@ export default {
                 try {
                     const response = await axios.put(`job/${this.id}`, {
                         position: this.form.position,
-                        minimum_value: this.form.minVal
+                        minimum_value: this.form.minVal,
+                        info: this.info
                     })
 
                     Swal.fire({
@@ -245,9 +263,11 @@ export default {
             if(id.value) {
                 this.id = parseInt(id.value)
                 this.editForm = true
-    
+
+                const info = await axios.get(`info/${this.id}`)
                 const res = await axios.get(`job/${this.id}`)
-    
+                
+                this.info = info.data.data
                 this.form.position = res.data.data.position
                 this.form.minVal = res.data.data.minimum_value
     
@@ -326,17 +346,29 @@ export default {
                 })
             }
         },
+        addField(info) {
+            info.push({});
+        },
+        removeField(index, info) {
+            info.splice(index, 1)
+        },
         async render() {
-            const render = await axios.get('job')
-
             let id = document.getElementById("idJob")
             id.value = null
 
-            this.vacancy = render.data.data
             this.editForm = false
             this.id = null
             this.form.position = ''
             this.form.minVal = ''
+            this.info = [{detail:''}]
+
+            try {
+                const response = await axios.get('job')
+
+                this.vacancy = response.data.data
+            } catch {
+                this.vacancy = []
+            }
         }
     },
     components: { DashboardNavbar, DashboardSidebar, DashboardFooter, DataTable }

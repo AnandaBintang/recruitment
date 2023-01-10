@@ -98,9 +98,9 @@ export default {
             columns:[
                 {data:null, render: function(data,type,row,meta)
                     {return `${meta.row+1}`}},
-                {data:'first_name'},
+                {data:'full_name'},
                 {data:'position'},
-                {data:'id', visible: false, searchable: false,},
+                {data:'id', visible: true, searchable: false,},
                 {data:'user_id', visible: false, searchable: false,},
             ],
             buttons: [

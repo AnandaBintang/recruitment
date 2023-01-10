@@ -108,7 +108,7 @@ export default {
             const response = await axios.get('get-token')
             this.data = response.data.data
 
-            this.username = response.data.data.name
+            this.username = response.data.data.username
             this.email = response.data.data.email
             this.phone = response.data.data.phone_number
 
