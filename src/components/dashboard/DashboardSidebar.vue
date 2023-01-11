@@ -60,6 +60,7 @@
 
 <script>
 import axios from 'axios'
+import router from '@/router'
 import VueFeather from 'vue-feather';
 
 export default {
@@ -71,11 +72,15 @@ export default {
         }
     },
     async created() {
-        const response = await axios.get('get-token')
-        this.data = response.data.data
-
-        if(this.route == 'Account') {
-            this.collapsed = false
+        try {
+            const response = await axios.get('get-token')
+            this.data = response.data.data
+    
+            if(this.route == 'Account') {
+                this.collapsed = false
+            }
+        } catch {
+            router.go()
         }
     },
     components: {

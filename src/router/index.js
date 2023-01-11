@@ -42,7 +42,7 @@ const routes = [
         component: () => import('@/views/login/user/StatusView.vue'),
     },
     {
-        path: "/test",
+        path: "/test/:id/:job",
         name: "Test",
         component: () => import('@/views/login/user/TestView.vue'),
     },
@@ -60,6 +60,11 @@ const routes = [
         path: "/account/:level",
         name: "Account",
         component: () => import('@/views/login/admin/AccountView.vue'),
+    },
+    {
+        path: '/:pathMatch(.*)',
+        name: "not-found",
+        component: () => import('@/views/error/PageNotFound.vue'),
     },
 ];
 

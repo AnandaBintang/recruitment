@@ -76,6 +76,7 @@ import '@/load/login'
 
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import router from '@/router'
 
 import DashboardNavbar from '@/components/dashboard/DashboardNavbar.vue'
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar.vue'
@@ -116,17 +117,13 @@ export default {
                 this.birthday = checkData.birthday
                 this.gender = checkData.gender
                 this.address = checkData.address
-                this.previewImage = 'http://recruitment.test/images/' + checkData.image
+                this.previewImage = 'http://recruitment.test/images/' + checkData.image + '?version'
             }
 
-            Swal.close();
+            Swal.close()
         } catch {
-            Swal.close();
-            Swal.fire({
-                icon: "error",
-                title: "Error!",
-                text: "Server error, silahkan muat ulang website!",
-            })
+            Swal.close()
+            router.go()
         }
     },
     props: ['id'],
@@ -142,9 +139,9 @@ export default {
             this.pdf = e.target.files[0];
         },
         async input() {
-            let checkData = null
-
             try {
+                let checkData = null
+
                 const profile = await axios.get('profile/' + this.data.id)
 
                 checkData = profile.data.data
@@ -175,7 +172,7 @@ export default {
                                 text: "Update Profil Sukses!",
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    this.$router.go()
+                                    router.go()
                                 }
                             })
                         }
@@ -183,7 +180,11 @@ export default {
                         Swal.fire({
                             icon: "error",
                             title: "Failed!",
-                            text: "Server error, silahkan muat ulang website!",
+                            text: "Gagal menyimpan data, silahkan coba lagi!",
+                        }).then((result) => {
+                            if(result.isConfirmed) {
+                                router.go()
+                            }
                         })
                     }
                 } else {
@@ -206,12 +207,18 @@ export default {
                                 title: "Success!",
                                 text: "Profil berhasil dibuat!",
                             })
+
+                            // router.go()
                         }
                     } catch {
                         Swal.fire({
                             icon: "error",
                             title: "Error!",
-                            text: "Server error, silahkan muat ulang website!",
+                            text: "Gagal menyimpan data, silahkan coba lagi!",
+                        }).then((result) => {
+                            if(result.isConfirmed) {
+                                router.go()
+                            }
                         })
                     }
                 }

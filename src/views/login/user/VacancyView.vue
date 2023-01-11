@@ -74,6 +74,7 @@ import '@/load/login'
 
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import router from '@/router'
 import { Modal } from 'bootstrap/dist/js/bootstrap.bundle.min'
 import DashboardNavbar from '@/components/dashboard/DashboardNavbar.vue'
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar.vue'
@@ -86,6 +87,7 @@ export default {
             detail:[],
             minValue:Number,
             data: '',
+            value: Number
         }
     },
     async created() {
@@ -103,11 +105,7 @@ export default {
             this.getVacancy()
         } catch {
             Swal.close()
-            Swal.fire({
-                icon: "error",
-                title: "Error!",
-                text: "Server error, silahkan muat ulang website!",
-            })
+            router.go()
         }
         
         Swal.close()
@@ -118,7 +116,7 @@ export default {
                 const response = await axios.get('job')
                 this.job = response.data.data
             } catch {
-                console.clear()
+                router.go()
             }
         },
         async openInfo(id) {
@@ -131,7 +129,7 @@ export default {
             const vacancyInfo = new Modal('#vacancyInfo', {})
             vacancyInfo.show()
         },
-        apply(id){
+        apply(job_id){
             Swal.fire({
                 title: 'Anda Yakin ingin Apply?',
                 icon: 'warning',
@@ -147,24 +145,35 @@ export default {
                         axios.get('profile/' + this.data.id)
                         .then(res => {
                             checkData = res.data.data
-
                             if(checkData) {
                                 try {
-                                    axios.post('status', {
-                                        user_id: this.data.id,
-                                        job_id: id
-                                    }).then(res => {
-                                        Swal.fire({
-                                            icon: "success",
-                                            title: "Success!",
-                                            text: res.data.message,
-                                        })
-                                    }).catch(() => {
-                                        Swal.fire({
-                                            icon: "error",
-                                            title: "Failed!",
-                                            text: "Anda sudah Apply di Lowongan Kerja ini!",
-                                        })
+                                    axios.get(`check-app/${this.data.id}/${job_id}`)
+                                    .then(res => {
+                                        let appCount = parseInt(JSON.stringify(res.data).replace('{}', 0))
+
+                                        if(appCount == 0) {
+                                            Swal.fire({
+                                                icon: "warning",
+                                                title: "Peringatan!",
+                                                text: "Pendaftaran hampir berhasil, anda akan diarahkan menuju tes tulis. Mohon Persiapkan diri anda!",
+                                            }).then((result) => {
+                                                if(result.isConfirmed) {
+                                                    router.push({
+                                                        name: 'Test',
+                                                        params: {
+                                                            id: this.data.id,
+                                                            job: job_id
+                                                        }
+                                                    })
+                                                }
+                                            })
+                                        } else {
+                                            Swal.fire({
+                                                icon: "error",
+                                                title: "Failed!",
+                                                text: "Anda sudah Apply di Lowongan Kerja ini!",
+                                            })
+                                        }
                                     })
                                 } catch {
                                     Swal.fire({

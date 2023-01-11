@@ -18,8 +18,9 @@
                                         <thead>
                                             <tr>
                                                 <th class="border-gray-200" scope="col">ID Lamaran</th>
-                                                <th class="border-gray-200" scope="col">Tanggal</th>
-                                                <th class="border-gray-200" scope="col">Posisi</th>
+                                                <th class="border-gray-200 w-25" scope="col">Tanggal</th>
+                                                <th class="border-gray-200 w-25" scope="col">Posisi</th>
+                                                <th class="border-gray-200 w-25" scope="col">Nilai Tes</th>
                                                 <th class="border-gray-200" scope="col">Status</th>
                                             </tr>
                                         </thead>
@@ -28,6 +29,7 @@
                                                 <td>{{ index + 1 }}</td>
                                                 <td>{{ statuses.created_at }}</td>
                                                 <td>{{ statuses.position }}</td>
+                                                <td>{{ statuses.value }}</td>
                                                 <td>
                                                     <span v-if="statuses.status == 'Accepted'" class="badge bg-success text-light">{{ statuses.status }}</span>
                                                     <span v-else-if="statuses.status == 'Rejected'" class="badge bg-danger text-light">{{ statuses.status }}</span>
@@ -52,6 +54,7 @@ import '@/load/login'
 
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import router from '@/router'
 import DashboardNavbar from '@/components/dashboard/DashboardNavbar.vue';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar.vue';
 import DashboardFooter from '@/components/dashboard/DashboardFooter.vue';
@@ -78,14 +81,16 @@ export default {
             const status = await axios.get('status/' + this.data.id)
             this.status = status.data.data
 
-            Swal.close();
+            Swal.close()
         } catch {
-            Swal.close();
-            Swal.fire({
-                icon: "error",
-                title: "Error!",
-                text: "Server error, silahkan muat ulang website!",
-            })
+            Swal.close()
+            router.go()
+        }
+    },
+    mounted() {
+        if(localStorage.getItem('reload')) {
+            location.reload()
+            localStorage.removeItem('reload');
         }
     },
     components: { DashboardNavbar, DashboardSidebar, DashboardFooter }

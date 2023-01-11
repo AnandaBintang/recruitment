@@ -42,25 +42,29 @@ export default {
         }
     },
     async created() {
-        let checkData = null
-
-        const response = await axios.get('get-token')
-        this.data = response.data.data
-
-        const profile = await axios.get('profile/' + this.data.id);
-        checkData = profile.data.data
-
-        if(checkData) {
-            this.previewImage = 'http://recruitment.test/images/' + checkData.image
-        }
-
-        const sidebarToggle = document.body.querySelector('#sidebarToggle');
-        if (sidebarToggle) {
-            sidebarToggle.addEventListener('click', event => {
-                event.preventDefault();
-                document.body.classList.toggle('sidenav-toggled');
-                localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sidenav-toggled'));
-            });
+        try {
+            let checkData = null
+    
+            const response = await axios.get('get-token')
+            this.data = response.data.data
+    
+            const profile = await axios.get('profile/' + this.data.id);
+            checkData = profile.data.data
+    
+            if(checkData) {
+                this.previewImage = 'http://recruitment.test/images/' + checkData.image + '?version'
+            }
+    
+            const sidebarToggle = document.body.querySelector('#sidebarToggle');
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', event => {
+                    event.preventDefault();
+                    document.body.classList.toggle('sidenav-toggled');
+                    localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sidenav-toggled'));
+                });
+            }
+        } catch {
+            router.go()
         }
     },
     methods: {

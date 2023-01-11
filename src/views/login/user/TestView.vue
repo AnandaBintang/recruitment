@@ -7,7 +7,6 @@
                 :next="next"
                 :increment="increment"
                 :numCorrect="numCorrect"
-                :numTotal="numTotal"
             />
         </div>
     </div>
@@ -15,6 +14,8 @@
   
 <script>
 import axios from 'axios'
+import Swal from 'sweetalert2'
+import router from '@/router'
 
 import QuestionBox from '@/components/QuestionBox.vue'
 
@@ -24,27 +25,64 @@ export default {
             questions: [],
             index: 0,
             numCorrect: 0,
-            numTotal: 0
         }
     },
     mounted() {
-        window.addEventListener('beforeunload', () => {
-            event.preventDefault()
-            event.returnValue = ""
-        })
+        if(this.$router.name == "Test") {
+            window.addEventListener('beforeunload', () => {
+                event.preventDefault()
+                event.returnValue = ""
+            })
+        }
     },
     async created() {
         delete axios.defaults.headers.common["Authorization"];
-        const res = await axios.get("https://opentdb.com/api.php?amount=10&category=27&type=multiple")
+        const res = await axios.get("https://opentdb.com/api.php?amount=10&category=19&type=multiple")
 
         let resp = JSON.stringify(res.data.results).replace(/&quot;/g,'`').replace(/&#039;/g, '`');
         this.questions = JSON.parse(resp)
     },
     methods: {
-        next() {
+        async next() {
             let questionLength = this.questions.length - 1
             if(this.index >= questionLength) {
-                alert('you completed the test, your point is ' + this.numCorrect * 10)
+                try {
+                    const input = await axios.post('status', {
+                        user_id: this.$route.params.id,
+                        job_id: this.$route.params.job,
+                        value: this.numCorrect * 10
+                    })
+
+                    if(input) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Success!",
+                            text: "Pendaftaran berhasil, mohon menunggu untuk hasilnya!",
+                        }).then((result) => {
+                            if(result.isConfirmed) {
+                                axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
+
+                                localStorage.setItem('reload', '1')
+
+                                router.push({
+                                    name: 'Status'
+                                })
+                            }
+                        })
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error!",
+                            text: "Server error, silahkan muat ulang website!",
+                        })
+                    }
+                } catch {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error!",
+                        text: "Server error, silahkan muat ulang website!",
+                    })
+                }
             } else {
                 this.index++
             }
@@ -53,7 +91,6 @@ export default {
             if (isCorrect) {
                 this.numCorrect++
             }
-            this.numTotal++
         }
     },
     components: { QuestionBox }
@@ -81,112 +118,5 @@ export default {
     h1 {
         font-size: 2rem;
         margin-bottom: 2rem;
-    }
-    .quiz {
-        background-color: #382a4b;
-        padding: 1rem;
-        width: 100%;
-        max-width: 640px;
-    }
-    .quiz-info {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 1rem;
-    }
-    .quiz-info .question {
-        color: #8F8F8F;
-        font-size: 1.25rem;
-    }
-    .quiz-info.score {
-        color: #FFF;
-        font-size: 1.25rem;
-    }
-    .options {
-        margin-bottom: 1rem;
-    }
-    .option {
-        padding: 1rem;
-        display: block;
-        background-color: #271c36;
-        margin-bottom: 0.5rem;
-        border-radius: 0.5rem;
-        cursor: pointer;
-    }
-    .option:hover {
-        /* background-color: #2d213f; */
-        opacity: 0.5;
-    }
-    .selected {
-        background-color: #7f57b3;
-    }
-    .correct {
-        background-color: #2cce7d;
-    }
-    .incorrect {
-        background-color: #ff5a5f;
-    }
-    .option:last-of-type {
-        margin-bottom: 0;
-    }
-    .option.disabled {
-        opacity: 0.5;
-    }
-    .btn-success {
-        appearance: none;
-        outline: none;
-        border: none;
-        cursor: pointer;
-        padding: 0.5rem 1rem;
-        background-color: #00ef80;
-        color: #2d213f;
-        font-weight: 700;
-        text-transform: uppercase;
-        font-size: 1.2rem;
-        border-radius: 0.5rem;
-    }
-    .btn-success:hover:enabled {
-        background-color: #00a659;
-    }
-    .btn-primary {
-        appearance: none;
-        outline: none;
-        border: none;
-        cursor: pointer;
-        padding: 0.5rem 1rem;
-        background-color: #6610f2;
-        color: #2d213f;
-        font-weight: 700;
-        text-transform: uppercase;
-        font-size: 1.2rem;
-        border-radius: 0.5rem;
-    }
-    .btn-primary:hover:enabled {
-        background-color: #4400b0;
-    }
-    .btn-secondary {
-        appearance: none;
-        outline: none;
-        border: none;
-        cursor: pointer;
-        padding: 0.5rem 1rem;
-        background-color: #adb5bd;
-        color: #2d213f;
-        font-weight: 700;
-        text-transform: uppercase;
-        font-size: 1.2rem;
-        border-radius: 0.5rem;
-    }
-    button:disabled {
-        opacity: 0.5;
-    }
-    h2 {
-        font-size: 2rem;
-        margin-bottom: 2rem;
-        text-align: center;
-    }
-    p {
-        color: #8F8F8F;
-        font-size: 1.5rem;
-        text-align: center;
     }
 </style>
