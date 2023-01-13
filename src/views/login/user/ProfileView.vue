@@ -117,7 +117,7 @@ export default {
                 this.birthday = checkData.birthday
                 this.gender = checkData.gender
                 this.address = checkData.address
-                this.previewImage = 'http://recruitment.test/images/' + checkData.image + '?version'
+                this.previewImage = 'http://recruitment.test/images/' + checkData.image + '?version=1'
             }
 
             Swal.close()

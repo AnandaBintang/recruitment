@@ -25,62 +25,89 @@ export default {
             questions: [],
             index: 0,
             numCorrect: 0,
+            shouldPrevent: false
         }
     },
-    mounted() {
-        if(this.$router.name == "Test") {
-            window.addEventListener('beforeunload', () => {
-                event.preventDefault()
-                event.returnValue = ""
-            })
-        }
+    beforeMount() {
+        window.addEventListener('beforeunload', this.unload)
+    },
+    beforeUnmount() {
+        window.removeEventListener('beforeunload', this.unload)
     },
     async created() {
         delete axios.defaults.headers.common["Authorization"];
-        const res = await axios.get("https://opentdb.com/api.php?amount=10&category=19&type=multiple")
+        const res = await axios.get("https://opentdb.com/api.php?amount=3&category=19&type=multiple")
 
         let resp = JSON.stringify(res.data.results).replace(/&quot;/g,'`').replace(/&#039;/g, '`');
         this.questions = JSON.parse(resp)
     },
     methods: {
+        unload(e) {
+            if(!this.shouldPrevent) {
+                e.preventDefault()
+                e.returnValue = ""
+            }
+        },
         async next() {
             let questionLength = this.questions.length - 1
             if(this.index >= questionLength) {
-                try {
-                    const input = await axios.post('status', {
-                        user_id: this.$route.params.id,
-                        job_id: this.$route.params.job,
-                        value: this.numCorrect * 10
-                    })
+                const res = await axios.get(`job/${this.$route.params.job}`)
+                let minVal = res.data.data.minimum_value
+                let val = this.numCorrect * 10
 
-                    if(input) {
-                        Swal.fire({
-                            icon: "success",
-                            title: "Success!",
-                            text: "Pendaftaran berhasil, mohon menunggu untuk hasilnya!",
-                        }).then((result) => {
-                            if(result.isConfirmed) {
-                                axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
-
-                                localStorage.setItem('reload', '1')
-
-                                router.push({
-                                    name: 'Status'
-                                })
-                            }
+                if(val > minVal) {
+                    try {
+                        const input = await axios.post('status', {
+                            user_id: this.$route.params.id,
+                            job_id: this.$route.params.job,
+                            value: this.numCorrect * 10
                         })
-                    } else {
+
+                        if(input) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Success!",
+                                text: "Pendaftaran berhasil, mohon menunggu untuk hasilnya!",
+                            }).then((result) => {
+                                if(result.isConfirmed) {
+                                    axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
+
+                                    localStorage.setItem('reload', '1')
+
+                                    router.push({
+                                        name: 'Status'
+                                    })
+                                }
+                            })
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error!",
+                                text: "Server error, silahkan muat ulang website!",
+                            })
+                        }
+                    } catch {
                         Swal.fire({
                             icon: "error",
                             title: "Error!",
                             text: "Server error, silahkan muat ulang website!",
                         })
                     }
-                } catch {
+                } else {
                     Swal.fire({
                         icon: "error",
                         title: "Error!",
-                        text: "Server error, silahkan muat ulang website!",
+                        text: "Maaf anda gagal, nilai anda tidak memenuhi syarat!",
+                    }).then((result) => {
+                        if(result.isConfirmed) {
+                            axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
+                            
+                            localStorage.setItem('reload', '1')
+
+                            router.push({
+                                name: 'Vacancy'
+                            })
+                        }
                     })
                 }
             } else {

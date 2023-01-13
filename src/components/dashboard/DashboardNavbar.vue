@@ -52,7 +52,7 @@ export default {
             checkData = profile.data.data
     
             if(checkData) {
-                this.previewImage = 'http://recruitment.test/images/' + checkData.image + '?version'
+                this.previewImage = 'http://recruitment.test/images/' + checkData.image + '?version=1'
             }
     
             const sidebarToggle = document.body.querySelector('#sidebarToggle');

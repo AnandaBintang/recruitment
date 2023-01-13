@@ -55,7 +55,7 @@
                         <div class="modal-body">
                             <a :href="cv">Download CV</a>
                             <hr>
-                            <h5>Nilai Tes Tulis :</h5>
+                            <h5>Nilai Tes Tulis : {{ value }}</h5>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click.prevent="render()">Close</button>
@@ -95,12 +95,13 @@ export default {
         return{
             applicant: ref([]),
             cv: null,
+            value: null,
             columns:[
                 {data:null, render: function(data,type,row,meta)
                     {return `${meta.row+1}`}},
                 {data:'full_name'},
                 {data:'position'},
-                {data:'id', visible: true, searchable: false,},
+                {data:'id', visible: false, searchable: false,},
                 {data:'user_id', visible: false, searchable: false,},
             ],
             buttons: [
@@ -173,16 +174,21 @@ export default {
         async openInfo() {
             let dt = this.$refs.table.dt();
             let id = document.getElementById("idUser")
+            let app = document.getElementById("idApp")
 
             dt.rows({ selected: true }).every(function () {
                 id.value = this.data().user_id;
+                app.value = this.data().id;
             })
 
             if(id.value) {
                 try {
                     const response = await axios.get(`profile/${id.value}`)
 
-                    this.cv = 'http://recruitment.test/docs/' + response.data.data.cv
+                    this.cv = 'http://recruitment.test/docs/' + response.data.data.cv + '?version=1'
+
+                    const value = await axios.get(`get-val/${app.value}`)
+                    this.value = value.data.data.value
 
                     const applicantInfo = new Modal('#applicantInfo', {
                         keyboard: false

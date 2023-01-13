@@ -110,6 +110,12 @@ export default {
         
         Swal.close()
     },
+    mounted() {
+        if(localStorage.getItem('reload')) {
+            location.reload()
+            localStorage.removeItem('reload');
+        }
+    },
     methods: {
         async getVacancy() {
             try {
