@@ -157,6 +157,8 @@ export default {
                         icon: "success",
                         title: response.data.status,
                         text: response.data.message,
+                        allowEscapeKey: false,
+                        allowOutsideClick: false
                     }).then((result) => {
                         if (result.isConfirmed) {
                             localStorage.setItem('reload', '1')

@@ -20,6 +20,7 @@
                                                 <tr>
                                                     <th class="border-gray-200" scope="col">#</th>
                                                     <th class="border-gray-200" scope="col">Posisi</th>
+                                                    <th class="border-gray-200" scope="col">Kuota</th>
                                                     <th class="border-gray-200" scope="col">Actions</th>
                                                 </tr>
                                             </thead>
@@ -27,6 +28,7 @@
                                                 <tr v-for="(jobs, index) in job" :key="jobs.id">
                                                     <td>{{ index + 1 }}</td>
                                                     <td>{{ jobs.position }}</td>
+                                                    <td>{{ jobs.quota }} Orang</td>
                                                     <td>
                                                         <button class="btn btn-warning btn-xs" type="submit" @click.prevent="openInfo(jobs.id)"><i class="fa fa-info"></i></button> |
                                                         <button class="btn btn-success btn-xs" @click.prevent="apply(jobs.id)" type="submit"><i class="fa fa-check"></i></button>
@@ -119,7 +121,7 @@ export default {
     methods: {
         async getVacancy() {
             try {
-                const response = await axios.get('job')
+                const response = await axios.get('get-active')
                 this.job = response.data.data
             } catch {
                 router.go()
@@ -143,7 +145,9 @@ export default {
                 confirmButtonColor: '#22bb33',
                 confirmButtonText: 'Yakin',
                 cancelButtonColor: '#d33',
-                reverseButtons: true
+                reverseButtons: true,
+                allowEscapeKey: false,
+                allowOutsideClick: false
                 }).then((result) => {
                     if (result.isConfirmed) {
                         let checkData = null
@@ -153,33 +157,44 @@ export default {
                             checkData = res.data.data
                             if(checkData) {
                                 try {
-                                    axios.get(`check-app/${this.data.id}/${job_id}`)
-                                    .then(res => {
-                                        let appCount = parseInt(JSON.stringify(res.data).replace('{}', 0))
+                                    axios.get(`check-quota/${job_id}`)
+                                    .then(() => {
+                                        axios.get(`check-app/${this.data.id}/${job_id}`)
+                                        .then(res => {
+                                            let appCount = parseInt(JSON.stringify(res.data).replace('{}', 0))
 
-                                        if(appCount == 0) {
-                                            Swal.fire({
-                                                icon: "warning",
-                                                title: "Peringatan!",
-                                                text: "Pendaftaran hampir berhasil, anda akan diarahkan menuju tes tulis. Mohon Persiapkan diri anda!",
-                                            }).then((result) => {
-                                                if(result.isConfirmed) {
-                                                    router.push({
-                                                        name: 'Test',
-                                                        params: {
-                                                            id: this.data.id,
-                                                            job: job_id
-                                                        }
-                                                    })
-                                                }
-                                            })
-                                        } else {
-                                            Swal.fire({
-                                                icon: "error",
-                                                title: "Failed!",
-                                                text: "Anda sudah Apply di Lowongan Kerja ini!",
-                                            })
-                                        }
+                                            if(appCount == 0) {
+                                                Swal.fire({
+                                                    icon: "warning",
+                                                    title: "Peringatan!",
+                                                    text: "Pendaftaran hampir berhasil, anda akan diarahkan menuju tes tulis. Mohon Persiapkan diri anda!",
+                                                    allowOutsideClick: false,
+                                                    allowEscapeKey: false,
+                                                }).then((result) => {
+                                                    if(result.isConfirmed) {
+                                                        router.push({
+                                                            name: 'Test',
+                                                            params: {
+                                                                id: this.data.id,
+                                                                job: job_id
+                                                            }
+                                                        })
+                                                    }
+                                                })
+                                            } else {
+                                                Swal.fire({
+                                                    icon: "error",
+                                                    title: "Failed!",
+                                                    text: "Anda sudah Apply di Lowongan Kerja ini!",
+                                                })
+                                            }
+                                        })
+                                    }).catch(() => {
+                                        Swal.fire({
+                                            icon: "error",
+                                            title: "Failed!",
+                                            text: "Kuota Lowongan sudah penuh!",
+                                        })
                                     })
                                 } catch {
                                     Swal.fire({

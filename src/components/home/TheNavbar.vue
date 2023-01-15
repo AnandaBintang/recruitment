@@ -39,7 +39,9 @@ export default {
                 showCancelButton: true,
                 cancelButtonColor: '#3085d6',
                 confirmButtonColor: '#d33',
-                confirmButtonText: 'Logout'
+                confirmButtonText: 'Logout',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
                 }).then((result) => {
                 if (result.isConfirmed) {
                     let token = localStorage.getItem('token')

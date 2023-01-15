@@ -60,16 +60,26 @@
         },
         methods: {
             async login() {
+                Swal.fire({
+                    title: 'Please Wait!',
+                    didOpen: () => {
+                        Swal.showLoading()
+                    },
+                });
                 try {
                     const response = await axios.post('login', {
                         email: this.email,
                         password: this.password
                     })
 
+                    Swal.close()
+
                     Swal.fire({
                         icon: "success",
                         title: response.data.status,
                         text: response.data.msg,
+                        allowEscapeKey: false,
+                        allowOutsideClick: false
                     }).then((result) => {
                         if (result.isConfirmed) {
                             localStorage.setItem('reload', '1')

@@ -333,7 +333,9 @@ export default {
                 cancelButtonColor: '#22bb33',
                 confirmButtonText: 'Yakin',
                 confirmButtonColor: '#d33',
-                reverseButtons: false
+                reverseButtons: false,
+                allowEscapeKey: false,
+                allowOutsideClick: false
                 }).then((result) => {
                     if (result.isConfirmed) {
                         axios.put(`reset-password/${id}`)
@@ -369,7 +371,9 @@ export default {
                     cancelButtonColor: '#22bb33',
                     confirmButtonText: 'Yakin',
                     confirmButtonColor: '#d33',
-                    reverseButtons: false
+                    reverseButtons: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
                     }).then((result) => {
                         if (result.isConfirmed) {
                             let dt = this.$refs.table.dt();

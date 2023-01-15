@@ -28,6 +28,8 @@
                                                         <th>#</th>
                                                         <th>Posisi Kerja</th>
                                                         <th>Nilai Minimal</th>
+                                                        <th>Kuota</th>
+                                                        <th>Status</th>
                                                     </tr>
                                                 </thead>
                                             </DataTable>
@@ -60,6 +62,16 @@
                                 <div class="mb-3">
                                     <label class="col-form-label">Nilai Minimal</label>
                                     <input type="number" class="form-control" v-model="this.form.minVal" required placeholder="Enter a Minimum Value">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="col-form-label">Kuota</label>
+                                    <input type="number" class="form-control" v-model="this.form.quota" required placeholder="Enter a Quota">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="col-form-label">Aktif</label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="active" name="active" v-model="this.form.active">
+                                    </div>
                                 </div>
                                 <hr>
                                 <div class="mb-3">
@@ -121,12 +133,35 @@ export default {
             form: {
                 position: '',
                 minVal: '',
+                quota: '',
+                active: true
             },
             columns:[
-                {data:null, render: function(data,type,row,meta)
-                    {return `${meta.row+1}`}},
+                {
+                    data:null,
+                    render: function(data,type,row,meta){
+                        return `${meta.row+1}`
+                    }
+                },
                 {data:'position'},
                 {data:'minimum_value'},
+                {
+                    data: null,
+                    render: function(data) {
+                        return `${data.quota} Orang`
+                    }
+                },
+                {
+                    data:null,
+                    className: 'dt-center',
+                    render: function(data) {
+                        if(data.active) {
+                            return '<button class="btn btn-sm btn-success"></button>'
+                        } else {
+                            return '<button class="btn btn-sm btn-danger"></button>'
+                        }
+                    }
+                },
                 {data:'id', visible: false, searchable: false,},
             ],
             buttons: [
@@ -207,6 +242,8 @@ export default {
                     const response = await axios.post('job', {
                         position: this.form.position,
                         minimum_value: this.form.minVal,
+                        quota: this.form.quota,
+                        active: this.form.active,
                         info: this.info
                     })
     
@@ -231,6 +268,8 @@ export default {
                     const response = await axios.put(`job/${this.id}`, {
                         position: this.form.position,
                         minimum_value: this.form.minVal,
+                        quota: this.form.quota,
+                        active: this.form.active,
                         info: this.info
                     })
 
@@ -266,10 +305,16 @@ export default {
 
                 const info = await axios.get(`info/${this.id}`)
                 const res = await axios.get(`job/${this.id}`)
+
+                let status = true
+
+                if(res.data.data.active == 0) status = false
                 
                 this.info = info.data.data
                 this.form.position = res.data.data.position
                 this.form.minVal = res.data.data.minimum_value
+                this.form.quota = res.data.data.quota
+                this.form.active = status
     
                 this.openForm()
             }
@@ -282,7 +327,9 @@ export default {
                 cancelButtonColor: '#22bb33',
                 confirmButtonText: 'Yakin',
                 confirmButtonColor: '#d33',
-                reverseButtons: false
+                reverseButtons: false,
+                allowEscapeKey: false,
+                allowOutsideClick: false
                 }).then((result) => {
                     if (result.isConfirmed) {
                         axios.put(`reset-password/${id}`)
@@ -318,7 +365,9 @@ export default {
                     cancelButtonColor: '#22bb33',
                     confirmButtonText: 'Yakin',
                     confirmButtonColor: '#d33',
-                    reverseButtons: false
+                    reverseButtons: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
                     }).then((result) => {
                         if (result.isConfirmed) {
                             dt.rows({ selected: true }).every(function () {
@@ -360,6 +409,8 @@ export default {
             this.id = null
             this.form.position = ''
             this.form.minVal = ''
+            this.form.quota = ''
+            this.form.active = true
             this.info = [{detail:''}]
 
             try {

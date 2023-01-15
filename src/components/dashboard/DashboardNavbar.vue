@@ -75,7 +75,9 @@ export default {
                     showCancelButton: true,
                     cancelButtonColor: '#3085d6',
                     confirmButtonColor: '#d33',
-                    confirmButtonText: 'Logout'
+                    confirmButtonText: 'Logout',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
                 }).then((result) => {
                     if (result.isConfirmed) {
                         let token = localStorage.getItem('token')
@@ -85,9 +87,11 @@ export default {
                             }
                         }).then(() => {
                             Swal.fire({
-                            icon: "success",
-                            title: "Logout!",
-                            text: "Kamu berhasil logout!",
+                                icon: "success",
+                                title: "Logout!",
+                                text: "Kamu berhasil logout!",
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
                             }).then((result) => {
                                 if (result.isConfirmed) {
                                     localStorage.setItem('reload', '1')

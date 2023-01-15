@@ -7,6 +7,7 @@
                 :next="next"
                 :increment="increment"
                 :numCorrect="numCorrect"
+                :total="questionTotal"
             />
         </div>
     </div>
@@ -25,6 +26,7 @@ export default {
             questions: [],
             index: 0,
             numCorrect: 0,
+            questionTotal: 0,
             shouldPrevent: false
         }
     },
@@ -40,6 +42,7 @@ export default {
 
         let resp = JSON.stringify(res.data.results).replace(/&quot;/g,'`').replace(/&#039;/g, '`');
         this.questions = JSON.parse(resp)
+        this.questionTotal = Object.keys(JSON.parse(resp)).length
     },
     methods: {
         unload(e) {
@@ -53,14 +56,14 @@ export default {
             if(this.index >= questionLength) {
                 const res = await axios.get(`job/${this.$route.params.job}`)
                 let minVal = res.data.data.minimum_value
-                let val = this.numCorrect * 10
+                let val = Math.round(this.numCorrect * (100/this.questionTotal))
 
                 if(val > minVal) {
                     try {
                         const input = await axios.post('status', {
                             user_id: this.$route.params.id,
                             job_id: this.$route.params.job,
-                            value: this.numCorrect * 10
+                            value: val
                         })
 
                         if(input) {
@@ -68,6 +71,8 @@ export default {
                                 icon: "success",
                                 title: "Success!",
                                 text: "Pendaftaran berhasil, mohon menunggu untuk hasilnya!",
+                                allowEscapeKey: false,
+                                allowOutsideClick: false
                             }).then((result) => {
                                 if(result.isConfirmed) {
                                     axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
@@ -98,6 +103,8 @@ export default {
                         icon: "error",
                         title: "Error!",
                         text: "Maaf anda gagal, nilai anda tidak memenuhi syarat!",
+                        allowEscapeKey: false,
+                        allowOutsideClick: false
                     }).then((result) => {
                         if(result.isConfirmed) {
                             axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')

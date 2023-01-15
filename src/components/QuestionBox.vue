@@ -4,7 +4,7 @@
     <section class="quiz">
         <div class="quiz-info">
             <span class="question">{{ currentQuestion.question }}</span>
-            <span class="score">Score Point: {{ numCorrect }}/10</span>
+            <span class="score">Score Point: {{ numCorrect }}/{{ total }}</span>
         </div>
 
         <ul class="options">
@@ -45,7 +45,8 @@ export default {
         next: Function,
         prev: Function,
         increment: Function,
-        numCorrect: Number
+        numCorrect: Number,
+        total: Number
     },
     data() {
         return {

@@ -170,6 +170,8 @@ export default {
                                 icon: "success",
                                 title: "Success!",
                                 text: "Update Profil Sukses!",
+                                allowEscapeKey: false,
+                                allowOutsideClick: false
                             }).then((result) => {
                                 if (result.isConfirmed) {
                                     router.go()
@@ -181,6 +183,8 @@ export default {
                             icon: "error",
                             title: "Failed!",
                             text: "Gagal menyimpan data, silahkan coba lagi!",
+                            allowEscapeKey: false,
+                            allowOutsideClick: false
                         }).then((result) => {
                             if(result.isConfirmed) {
                                 router.go()
@@ -215,6 +219,8 @@ export default {
                             icon: "error",
                             title: "Error!",
                             text: "Gagal menyimpan data, silahkan coba lagi!",
+                            allowEscapeKey: false,
+                            allowOutsideClick: false
                         }).then((result) => {
                             if(result.isConfirmed) {
                                 router.go()

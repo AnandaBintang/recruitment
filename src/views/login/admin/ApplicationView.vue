@@ -221,7 +221,9 @@ export default {
                     confirmButtonColor: '#22bb33',
                     confirmButtonText: 'Yakin',
                     cancelButtonColor: '#d33',
-                    reverseButtons: true
+                    reverseButtons: true,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
                     }).then((result) => {
                         if (result.isConfirmed) {
                             axios.post('accept-applicant', {id: id.value})
@@ -266,7 +268,9 @@ export default {
                     cancelButtonColor: '#22bb33',
                     confirmButtonText: 'Yakin',
                     confirmButtonColor: '#d33',
-                    reverseButtons: false
+                    reverseButtons: false,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false
                     }).then((result) => {
                         if (result.isConfirmed) {
                             axios.post('reject-applicant', {id: id.value})
