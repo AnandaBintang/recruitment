@@ -194,6 +194,8 @@ export default {
 
         Swal.fire({
             title: 'Loading Data!',
+            allowEscapeKey: false,
+            allowOutsideClick: false,
             didOpen: () => {
                 Swal.showLoading();
             },
@@ -214,6 +216,8 @@ export default {
 
         Swal.fire({
             title: 'Loading Data!',
+            allowEscapeKey: false,
+            allowOutsideClick: false,
             didOpen: () => {
                 Swal.showLoading();
             },

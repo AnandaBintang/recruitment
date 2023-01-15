@@ -207,6 +207,8 @@ export default {
     async created() {
         Swal.fire({
             title: 'Loading Data!',
+            allowEscapeKey: false,
+            allowOutsideClick: false,
             didOpen: () => {
                 Swal.showLoading();
             },

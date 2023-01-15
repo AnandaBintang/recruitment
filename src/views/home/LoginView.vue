@@ -62,6 +62,8 @@
             async login() {
                 Swal.fire({
                     title: 'Please Wait!',
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
                     didOpen: () => {
                         Swal.showLoading()
                     },
