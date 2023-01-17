@@ -77,6 +77,15 @@
         methods: {
             async submitForm() {
                 if (this.password == this.password_confirm) {
+                    Swal.fire({
+                        title: 'Please Wait!',
+                        allowEscapeKey: false,
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading()
+                        },
+                    });
+
                     try {
                         const response = await axios.post('user', {
                             name: this.username,
@@ -85,6 +94,8 @@
                             phone_number: this.phone,
                             password: this.password_confirm,
                         })
+
+                        Swal.close()
         
                         Swal.fire({
                             icon: 'success',

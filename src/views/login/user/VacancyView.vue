@@ -171,7 +171,10 @@ export default {
                                                     title: "Peringatan!",
                                                     text: "Pendaftaran hampir berhasil, anda akan diarahkan menuju tes tulis. Mohon Persiapkan diri anda!",
                                                     allowOutsideClick: false,
+                                                    showCancelButton: true,
                                                     allowEscapeKey: false,
+                                                    cancelButtonColor: '#d33',
+                                                    reverseButtons: true,
                                                 }).then((result) => {
                                                     if(result.isConfirmed) {
                                                         router.push({

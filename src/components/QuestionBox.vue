@@ -4,7 +4,8 @@
     <section class="quiz">
         <div class="quiz-info">
             <span class="question">{{ currentQuestion.question }}</span>
-            <span class="score">Score Point: {{ numCorrect }}/{{ total }}</span>
+            <span class="score">Question: {{ questionNumber + 1 }}/{{ total }}</span>
+            <span class="score">Score: {{ value }}</span>
         </div>
 
         <ul class="options">
@@ -46,14 +47,16 @@ export default {
         prev: Function,
         increment: Function,
         numCorrect: Number,
-        total: Number
+        total: Number,
+        questionNumber: Number
     },
     data() {
         return {
             selectedIndex: null,
             correctIndex: null,
             shuffledAnswers: [],
-            answered: false
+            answered: false,
+            value: 0
         }
     },
     watch: {
@@ -74,7 +77,9 @@ export default {
             let isCorrect = false
             if (this.selectedIndex === this.correctIndex) {
                 isCorrect = true
+                this.value += Math.round(100/this.total)
             }
+            
             this.answered = true
             this.increment(isCorrect)
         },

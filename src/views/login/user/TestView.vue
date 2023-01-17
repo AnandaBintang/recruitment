@@ -8,6 +8,7 @@
                 :increment="increment"
                 :numCorrect="numCorrect"
                 :total="questionTotal"
+                :questionNumber="index"
             />
         </div>
     </div>
@@ -38,7 +39,7 @@ export default {
     },
     async created() {
         delete axios.defaults.headers.common["Authorization"];
-        const res = await axios.get("https://opentdb.com/api.php?amount=3&category=19&type=multiple")
+        const res = await axios.get("https://opentdb.com/api.php?amount=10&category=19&type=multiple")
 
         let resp = JSON.stringify(res.data.results).replace(/&quot;/g,'`').replace(/&#039;/g, '`');
         this.questions = JSON.parse(resp)
