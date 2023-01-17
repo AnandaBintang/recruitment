@@ -130,6 +130,7 @@ import '@/load/login'
 
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import router from '@/router'
 
 import DashboardNavbar from '@/components/dashboard/DashboardNavbar.vue'
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar.vue'
@@ -139,6 +140,13 @@ export default {
     data: function() {
         return {
             data: '',
+        }
+    },
+    async beforeRouteEnter() {
+        if(!localStorage.getItem('token')) {
+            return router.push({
+                path: 'page-not-found'
+            })
         }
     },
     async created() {
@@ -154,7 +162,7 @@ export default {
         const response = await axios.get('get-token')
         this.data = response.data.data
 
-        Swal.close();
+        Swal.close()
     },
     mounted() {
         if(localStorage.getItem('reload')) {

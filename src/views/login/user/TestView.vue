@@ -31,6 +31,16 @@ export default {
             shouldPrevent: false
         }
     },
+    async beforeRouteEnter() {
+        if(!localStorage.getItem('test')) {
+            return router.push({
+                path: 'page-not-found'
+            })
+        }
+    },
+    beforeRouteLeave() {
+        localStorage.removeItem('test')
+    },
     beforeMount() {
         window.addEventListener('beforeunload', this.unload)
     },
@@ -78,6 +88,7 @@ export default {
                                 if(result.isConfirmed) {
                                     axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
 
+                                    localStorage.removeItem('test')
                                     localStorage.setItem('reload', '1')
 
                                     router.push({
@@ -111,6 +122,7 @@ export default {
                             axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
                             
                             localStorage.setItem('reload', '1')
+                            localStorage.removeItem('test')
 
                             router.push({
                                 name: 'Vacancy'

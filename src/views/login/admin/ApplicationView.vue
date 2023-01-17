@@ -77,6 +77,7 @@ import 'datatables.net-buttons/js/buttons.print'
 
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import router from '@/router'
 import { ref } from 'vue'
 import { Modal } from 'bootstrap/dist/js/bootstrap.bundle.min'
 import DataTable from "datatables.net-vue3"
@@ -142,6 +143,22 @@ export default {
                     className: 'btn btn-sm btn-warning'
                 },
             ]
+        }
+    },
+    async beforeRouteEnter() {
+        if(!localStorage.getItem('token')) {
+            return router.push({
+                path: 'page-not-found'
+            })
+        } else {
+            const response = await axios.get('get-token')
+            let data = response.data.data
+
+            if(data.level == 'user') {
+                return router.push({
+                    path: 'page-not-found'
+                })
+            }
         }
     },
     async created() {

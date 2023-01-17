@@ -55,6 +55,7 @@ import '@/load/login'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 import router from '@/router'
+
 import DashboardNavbar from '@/components/dashboard/DashboardNavbar.vue';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar.vue';
 import DashboardFooter from '@/components/dashboard/DashboardFooter.vue';
@@ -64,6 +65,22 @@ export default {
         return{
             status: [],
             data: ''
+        }
+    },
+    async beforeRouteEnter() {
+        if(!localStorage.getItem('token')) {
+            return router.push({
+                path: 'page-not-found'
+            })
+        } else {
+            const response = await axios.get('get-token')
+            let data = response.data.data
+
+            if(data.level != 'user') {
+                return router.push({
+                    path: 'page-not-found'
+                })
+            }
         }
     },
     async created() {
