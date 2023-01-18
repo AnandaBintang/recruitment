@@ -52,7 +52,9 @@
                             <h1 class="modal-title fs-5" id="vacancyInfo">Informasi Pelamar Kerja</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click.prevent="render()"></button>
                         </div>
-                        <div class="modal-body">
+                        <div class="modal-body tex-center">
+                            <img class="img-account-profile rounded-circle d-flex mb-2" :src="image" alt="" />
+                            <hr>
                             <a :href="cv">Download CV</a>
                             <hr>
                             <h5>Nilai Tes Tulis : {{ value }}</h5>
@@ -96,6 +98,7 @@ export default {
         return{
             applicant: ref([]),
             cv: null,
+            image: null,
             value: null,
             columns:[
                 {data:null, render: function(data,type,row,meta)
@@ -205,6 +208,7 @@ export default {
                     const response = await axios.get(`profile/${id.value}`)
 
                     this.cv = 'http://recruitment.test/docs/' + response.data.data.cv + '?version=1'
+                    this.image = 'http://recruitment.test/images/' + response.data.data.image + '?version=1'
 
                     const value = await axios.get(`get-val/${app.value}`)
                     this.value = value.data.data.value
