@@ -43,10 +43,14 @@ export default {
     },
     async created() {
         try {
-            let checkData = null
-    
             const response = await axios.get('get-token')
             this.data = response.data.data
+        } catch {
+            router.go()
+        }
+
+        try {
+            let checkData = null
     
             const profile = await axios.get('profile/' + this.data.id);
             checkData = profile.data.data
@@ -54,17 +58,17 @@ export default {
             if(checkData) {
                 this.previewImage = 'http://recruitment.test/images/' + checkData.image + '?version=1'
             }
-    
-            const sidebarToggle = document.body.querySelector('#sidebarToggle');
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', event => {
-                    event.preventDefault();
-                    document.body.classList.toggle('sidenav-toggled');
-                    localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sidenav-toggled'));
-                });
-            }
         } catch {
-            router.go()
+            console.clear()
+        }
+
+        const sidebarToggle = document.body.querySelector('#sidebarToggle');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', event => {
+                event.preventDefault();
+                document.body.classList.toggle('sidenav-toggled');
+                localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sidenav-toggled'));
+            });
         }
     },
     methods: {

@@ -9,6 +9,10 @@
                         Dashboard
                     </router-link>
                     <div class="sidenav-menu-heading">Pages</div>
+                    <router-link class="nav-link" active-class="active" to="/profile">
+                        <div class="nav-link-icon"><VueFeather type="user"></VueFeather></div>
+                        Data Diri
+                    </router-link>
                     <div v-if="data.level == 'admin' || data.level == 'hrd' || data.level == 'direktur'">
                         <router-link class="nav-link" active-class="active" to="/vacancy-list">
                             <div class="nav-link-icon"><VueFeather type="briefcase"></VueFeather></div>
@@ -33,10 +37,6 @@
                         </div>
                     </div>
                     <div v-if="data.level == 'user'">
-                        <router-link class="nav-link" active-class="active" to="/profile">
-                            <div class="nav-link-icon"><VueFeather type="user"></VueFeather></div>
-                            Data Diri
-                        </router-link>
                         <router-link class="nav-link" active-class="active" to="/vacancy">
                             <div class="nav-link-icon"><VueFeather type="briefcase"></VueFeather></div>
                             Lowongan

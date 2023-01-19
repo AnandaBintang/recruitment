@@ -24,6 +24,21 @@
                     <div class="container-xl px-4 mt-n10">
                         <div class="row" v-if="data.level == 'admin' || data.level == 'hrd' || data.level == 'direktur'">
                             <div class="col-xl-4 mb-4">
+                                <!-- Dashboard example card 1-->
+                                <router-link to="/profile" class="card lift h-100" href="#!">
+                                    <div class="card-body d-flex justify-content-center flex-column">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="me-3">
+                                                <i class="feather-xl text-primary mb-3" data-feather="package"></i>
+                                                <h5>Data Diri</h5>
+                                                <!-- <div class="text-muted small">To create informative visual elements on your pages</div> -->
+                                            </div>
+                                            <img src="@/assets/img/illustrations/browser-stats.svg" alt="..." style="width: 8rem" />
+                                        </div>
+                                    </div>
+                                </router-link>
+                            </div>
+                            <div class="col-xl-4 mb-4">
                                 <!-- Dashboard example card 2-->
                                 <router-link to="/vacancy-list" class="card lift h-100" href="#!">
                                     <div class="card-body d-flex justify-content-center flex-column">

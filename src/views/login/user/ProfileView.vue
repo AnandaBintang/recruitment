@@ -125,7 +125,6 @@ export default {
             Swal.close()
         } catch {
             Swal.close()
-            router.go()
         }
     },
     props: ['id'],
@@ -142,14 +141,9 @@ export default {
         },
         async input() {
             try {
-                let checkData = null
+                await axios.get('profile/' + this.data.id)
 
-                const profile = await axios.get('profile/' + this.data.id)
-
-                checkData = profile.data.data
-
-                if(checkData) {
-                    let formData = new FormData()
+                let formData = new FormData()
 
                     formData.append('id', this.data.id)
                     formData.append('fullName', this.fullName)
@@ -193,49 +187,46 @@ export default {
                             }
                         })
                     }
-                } else {
-                    let formData = new FormData()
+            } catch {
+                let formData = new FormData()
 
-                    formData.append('id', this.data.id)
-                    formData.append('fullName', this.fullName)
-                    formData.append('birthday', this.birthday)
-                    formData.append('gender', this.gender)
-                    formData.append('address', this.address)
-                    formData.append('photo', this.photo)
-                    formData.append('cv', this.pdf)
+                formData.append('id', this.data.id)
+                formData.append('fullName', this.fullName)
+                formData.append('birthday', this.birthday)
+                formData.append('gender', this.gender)
+                formData.append('address', this.address)
+                formData.append('photo', this.photo)
+                formData.append('cv', this.pdf)
 
-                    try {
-                        const inputData = await axios.post('profile', formData)
+                try {
+                    const inputData = await axios.post('profile', formData)
 
-                        if(inputData) {
-                            Swal.fire({
-                                icon: "success",
-                                title: "Success!",
-                                text: "Profil berhasil dibuat!",
-                            })
-
-                            // router.go()
-                        }
-                    } catch {
+                    if(inputData) {
                         Swal.fire({
-                            icon: "error",
-                            title: "Error!",
-                            text: "Gagal menyimpan data, silahkan coba lagi!",
+                            icon: "success",
+                            title: "Success!",
+                            text: "Profil berhasil dibuat!",
                             allowEscapeKey: false,
                             allowOutsideClick: false
                         }).then((result) => {
-                            if(result.isConfirmed) {
+                            if (result.isConfirmed) {
                                 router.go()
                             }
                         })
                     }
+                } catch {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error!",
+                        text: "Gagal menyimpan data, silahkan coba lagi!",
+                        allowEscapeKey: false,
+                        allowOutsideClick: false
+                    }).then((result) => {
+                        if(result.isConfirmed) {
+                            router.go()
+                        }
+                    })
                 }
-            } catch {
-                Swal.fire({
-                    icon: "error",
-                    title: "Error!",
-                    text: "Server error, silahkan muat ulang website!",
-                })
             }
         }
     },

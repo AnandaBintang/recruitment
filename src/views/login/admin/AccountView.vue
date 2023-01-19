@@ -36,7 +36,8 @@
                                             <div class="mt-3 mb-3">
                                                 <a class="btn btn-sm btn-primary" @click.prevent="openForm()"><i class="fa fa-plus"></i></a> |
                                                 <button class="btn btn-sm btn-danger" @click.prevent="remove()" title="Delete User"><i class="fa fa-trash"></i></button> |
-                                                <button class="btn btn-sm btn-warning" @click.prevent="edit()" title="Edit User"><i class="fa fa-pen"></i></button>
+                                                <button class="btn btn-sm btn-warning" @click.prevent="edit()" title="Edit User"><i class="fa fa-pen"></i></button> | 
+                                                <button class="btn btn-sm btn-secondary" @click.prevent="showProfile()" title="Info User"><i class="fa fa-info"></i></button>
                                             </div>
                                         </div>
                                     </div>
@@ -98,6 +99,57 @@
                         </div>
                     </form>
                 </div>
+                <div class="modal fade" id="profileForm" data-bs-backdrop="static" tabindex="-1" aria-labelledby="profileForm" aria-hidden="true">
+                    <form @submit.prevent="inputProfile()">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5">Data Diri User</h1>
+                                <button type="button" class="btn-close" @click.prevent="render()" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                    <input id="fileUpload" @change="onChange" type="file" accept=".jpg, .jpeg, .png" hidden>
+                                    <img class="img-account-profile rounded-circle mb-2" :src="profile.previewImage" alt="" />
+                                    <div class="small font-italic text-muted mb-4">JPG or PNG no larger than 5 MB</div>
+                                    <button class="btn btn-primary" @click="click()" type="button">Upload new image</button>
+                                    <hr>
+                                    <div class="mb-3">
+                                        <label class="col-form-label">Nama Lengkap</label>
+                                        <input type="text" class="form-control" required placeholder="Enter a Full Name" v-model="profile.full_name">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="small mb-1" for="inputBirthday">Birthday</label>
+                                        <input class="form-control" id="inputBirthday" type="date" v-model="profile.birthday" placeholder="Enter your Birthday"/>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="small mb-1" for="inputBirthday">Gender</label>
+                                        <br>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="gender" id="laki" value="L" v-model="profile.gender">
+                                            <label class="form-check-label" for="laki">Laki-Laki</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="gender" id="perempuan" value="P" v-model="profile.gender">
+                                            <label class="form-check-label" for="perempuan">Perempuan</label>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="small mb-1" for="inputAddress">Address</label>
+                                        <textarea class="form-control" id="inputAddress" cols="30" rows="10" placeholder="Enter your Address" v-model="profile.address"></textarea>
+                                    </div>
+                                    <div class="mb-3" v-if="!profile.cv">
+                                        <label class="small mb-1" for="inputCv">CV</label>
+                                        <input class="form-control" id="inputCv" type="file" @change="onChangePdf" accept="application/pdf" placeholder="Enter your CV"/>
+                                    </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="closeProfileModal" @click.prevent="render()">Close</button>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
                 <DashboardFooter/>
             </div>
         </div>
@@ -134,12 +186,21 @@ export default {
             user: ref([]),
             id: null,
             level: '',
+            photo: '',
             form: {
                 username: '',
                 email: '',
                 phone: '',
                 password: '',
                 password_confirm: '',
+            },
+            profile: {
+                full_name: '',
+                gender: '',
+                birthday: '',
+                address: '',
+                previewImage: 'http://recruitment.test/images/default.jpg',
+                cv: '',
             },
             columns:[
                 {data:null, render: function(data,type,row,meta)
@@ -258,11 +319,27 @@ export default {
         DataTable.use(ButtonsHtml5)
     },
     methods: {
+        click() {
+            document.getElementById("fileUpload").click()
+        },
+        onChange(e) {
+            this.photo = e.target.files[0];
+            this.profile.previewImage = URL.createObjectURL(this.photo)
+        },
+        onChangePdf(e) {
+            this.profile.cv = e.target.files[0];
+        },
         openForm() {
             const accountForm = new Modal('#accountForm', {
                 keyboard: false
             })
             accountForm.show()
+        },
+        openProfileForm() {
+            const profileForm = new Modal('#profileForm', {
+                keyboard: false
+            })
+            profileForm.show()
         },
         async input() {
             if(!this.editForm){
@@ -325,6 +402,101 @@ export default {
                 }
             }
         },
+        async inputProfile() {
+            Swal.fire({
+                title: 'Please Wait!',
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            })
+            
+            try {
+                await axios.get('profile/' + this.id)
+
+                let formData = new FormData()
+
+                formData.append('id', this.id)
+                formData.append('fullName', this.profile.full_name)
+                formData.append('birthday', this.profile.birthday)
+                formData.append('gender', this.profile.gender)
+                formData.append('address', this.profile.address)
+
+                if(this.photo) {
+                    formData.append('photo', this.photo)
+                }
+                if(this.profile.cv) {
+                    formData.append('cv', this.profile.cv)
+                }
+
+                try {
+                    const update = await axios.post('update-profile' ,formData)
+
+                    if(update) {
+                        Swal.close()
+
+                        Swal.fire({
+                            icon: "success",
+                            title: "Success!",
+                            text: "Update Profil Sukses!",
+                            allowEscapeKey: false,
+                            allowOutsideClick: false
+                        })
+                    }
+                } catch {
+                    Swal.close()
+
+                    Swal.fire({
+                        icon: "error",
+                        title: "Failed!",
+                        text: "Gagal menyimpan data, silahkan coba lagi!",
+                        allowEscapeKey: false,
+                        allowOutsideClick: false
+                    })
+                }
+                
+                document.getElementById('closeProfileModal').click()
+                this.render()
+            } catch {
+                let formData = new FormData()
+
+                formData.append('id', this.id)
+                formData.append('fullName', this.profile.full_name)
+                formData.append('birthday', this.profile.birthday)
+                formData.append('gender', this.profile.gender)
+                formData.append('address', this.profile.address)
+                formData.append('photo', this.photo)
+                formData.append('cv', this.profile.cv)
+
+                try {
+                    const inputData = await axios.post('profile', formData)
+                    
+                    if(inputData) {
+                        Swal.close()
+                        
+                        Swal.fire({
+                            icon: "success",
+                            title: "Success!",
+                            text: "Profil berhasil dibuat!",
+                        })
+                    }
+                } catch {
+                    Swal.close()
+
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error!",
+                        text: "Gagal menyimpan data, silahkan coba lagi!",
+                        allowEscapeKey: false,
+                        allowOutsideClick: false
+                    })
+                }
+                
+                document.getElementById('closeProfileModal').click()
+                this.render()
+            }
+        },
         async edit(){
             let dt = this.$refs.table.dt();
             let id = document.getElementById("idUser")
@@ -344,6 +516,33 @@ export default {
                 this.form.phone = res.data.data.phone_number
 
                 this.openForm()
+            }
+        },
+        async showProfile(){
+            let dt = this.$refs.table.dt();
+            let id = document.getElementById("idUser")
+
+            dt.rows({ selected: true }).every(function () {
+                id.value = this.data().id;
+            })
+
+            if(id.value) {
+                this.id = parseInt(id.value)
+                this.editForm = true
+
+                try {
+                    const res = await axios.get(`profile/${this.id}`)
+    
+                    this.profile.full_name = res.data.data.full_name
+                    this.profile.gender = res.data.data.gender
+                    this.profile.address = res.data.data.address
+                    this.profile.previewImage = 'http://recruitment.test/images/' + res.data.data.image + '?version=1'
+                    this.profile.cv = res.data.data.cv
+                    
+                    this.openProfileForm()
+                } catch {
+                    this.openProfileForm()
+                }
             }
         },
         async resetPassword(id){
@@ -433,11 +632,20 @@ export default {
             this.user = render.data.data
             this.editForm = false
             this.id = null
+
             this.form.username = ''
             this.form.email = ''
             this.form.phone = ''
             this.form.password = ''
             this.form.password_confirm = ''
+
+            this.profile.full_name = ''
+            this.profile.gender = ''
+            this.profile.address = ''
+            this.profile.previewImage = 'http://recruitment.test/images/default.jpg'
+            this.profile.cv = ''
+
+            this.photo = ''
         }
     },
     components: { DashboardNavbar, DashboardSidebar, DashboardFooter, MazPhoneNumberInput, DataTable }
