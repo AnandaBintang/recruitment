@@ -74,7 +74,8 @@ export default {
                         const input = await axios.post('status', {
                             user_id: this.$route.params.id,
                             job_id: this.$route.params.job,
-                            value: val
+                            value: val,
+                            message: '-'
                         })
 
                         if(input) {

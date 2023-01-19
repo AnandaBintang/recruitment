@@ -238,18 +238,28 @@ export default {
             if(id.value) {
                 try {
                     Swal.fire({
-                    title: 'Anda Yakin ingin menerima pelamar ini?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#22bb33',
-                    confirmButtonText: 'Yakin',
-                    cancelButtonColor: '#d33',
-                    reverseButtons: true,
-                    allowEscapeKey: false,
-                    allowOutsideClick: false,
+                        title: 'Anda Yakin ingin menerima pelamar ini?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#22bb33',
+                        confirmButtonText: 'Yakin',
+                        cancelButtonColor: '#d33',
+                        reverseButtons: false,
+                        allowEscapeKey: false,
+                        allowOutsideClick: false,
+                        input: 'textarea',
+                        inputLabel: 'Message',
+                        inputPlaceholder: 'Type your message here... (optional)',
+                        inputAttributes: {
+                            'aria-label': 'Type your message here'
+                        },
+                        inputValue: 'Selamat anda telah diterima\nSilahkan datang ke kantor kami pada :\n\nAlamat : xxxxxx\nTanggal : xx-xx-xxxx\nPukul : xx.xx\n\nKami menunggu kedatangan anda!',
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            axios.post('accept-applicant', {id: id.value})
+                            axios.post('accept-applicant', {
+                                id: id.value,
+                                message: result.value
+                            })
                             .then(res => {
                                 Swal.fire({
                                     icon: "success",

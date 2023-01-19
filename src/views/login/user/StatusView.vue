@@ -31,7 +31,12 @@
                                                 <td>{{ statuses.position }}</td>
                                                 <td>{{ statuses.value }}</td>
                                                 <td>
-                                                    <span v-if="statuses.status == 'Accepted'" class="badge bg-success text-light">{{ statuses.status }}</span>
+                                                    <div v-if="statuses.status == 'Accepted'">
+                                                        <span class="badge bg-success text-light">{{ statuses.status }}</span> | 
+                                                        <span @click.prevent="showMessage(statuses.id)">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                                                        </span>
+                                                    </div>
                                                     <span v-else-if="statuses.status == 'Rejected'" class="badge bg-danger text-light">{{ statuses.status }}</span>
                                                     <span v-else class="badge bg-light text-dark">{{ statuses.status }}</span>
                                                 </td>
@@ -43,6 +48,22 @@
                         </div>
                     </div>
                 </main>
+                <div class="modal fade" id="applicationInfo" tabindex="-1" aria-labelledby="applicationInfo" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="applicationInfo">Informasi Lamaran Kerja</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click.prevent="render()"></button>
+                        </div>
+                        <div class="modal-body tex-center">
+                            <textarea id="message" class="form-control" cols="30" rows="10" v-model="message" readonly></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click.prevent="render()">Close</button>
+                        </div>
+                        </div>
+                    </div>
+                </div>
                 <DashboardFooter/>
             </div>
         </div>
@@ -55,6 +76,7 @@ import '@/load/login'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 import router from '@/router'
+import { Modal } from 'bootstrap/dist/js/bootstrap.bundle.min'
 
 import DashboardNavbar from '@/components/dashboard/DashboardNavbar.vue';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar.vue';
@@ -64,7 +86,8 @@ export default {
     data(){
         return{
             status: [],
-            data: ''
+            data: '',
+            message: ''
         }
     },
     async beforeRouteEnter() {
@@ -112,10 +135,35 @@ export default {
             localStorage.removeItem('reload');
         }
     },
+    methods: {
+        async showMessage(id) {
+            try {
+                const res = await axios.get(`get-message/${id}`)
+                this.message = res.data.data.message
+
+                const applicationInfo = new Modal('#applicationInfo', {
+                    keyboard: false
+                })
+
+                applicationInfo.show()
+            } catch {
+                Swal.fire({
+                    icon: "error",
+                    title: "Failed!",
+                    text: "Server error, silahkan muat ulang website!",
+                })
+            }
+        },
+        render(){
+            this.message = ''
+        }
+    },
     components: { DashboardNavbar, DashboardSidebar, DashboardFooter }
 }
 </script>
 
-<style>
-
+<style scoped>
+#message {
+    resize: none !important;
+}
 </style>

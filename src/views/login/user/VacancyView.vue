@@ -234,6 +234,12 @@ export default {
                                     text: "Anda belum mengisi data diri, silahkan isi dahulu!",
                                 })
                             }
+                        }).catch(() => {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Failed!",
+                                text: "Anda belum mengisi data diri, silahkan isi dahulu!",
+                            })
                         })
                     }
             })
