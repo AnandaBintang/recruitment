@@ -20,7 +20,7 @@
                                                 class="table table-hover display" 
                                                 :data="user"
                                                 :columns="columns"
-                                                :options="{responsive: true, select: true, autoWidth: false,dom: 'Bflrtip', buttons: buttons, }"
+                                                :options="{responsive: true, select: 'single', autoWidth: false,dom: 'Bflrtip', buttons: buttons, }"
                                                 ref="table"
                                             >
                                                 <thead>
@@ -28,8 +28,10 @@
                                                         <th>#</th>
                                                         <th>Username</th>
                                                         <th>Email</th>
-                                                        <th>Status</th>
                                                         <th>Nomor Telepon</th>
+                                                        <th>Status</th>
+                                                        <th>Dibuat pada</th>
+                                                        <th>Diperbarui pada</th>
                                                     </tr>
                                                 </thead>
                                             </DataTable>
@@ -199,7 +201,7 @@ export default {
                 gender: '',
                 birthday: '',
                 address: '',
-                previewImage: 'http://recruitment.test/images/default.jpg',
+                previewImage: 'http://192.168.1.8:8000/images/default.jpg',
                 cv: '',
             },
             columns:[
@@ -207,8 +209,30 @@ export default {
                     {return `${meta.row+1}`}},
                 {data:'username'},
                 {data:'email'},
-                {data:'status'},
                 {data:'phone_number'},
+                {
+                    data: null,
+                    className: 'dt-center',
+                    render: function(data) {
+                        if(data.status == 'aktif') {
+                            return '<button class="btn btn-sm btn-success"></button>'
+                        } else {
+                            return '<button class="btn btn-sm btn-danger"></button>'
+                        }
+                    }
+                },
+                {
+                    data: null,
+                    render: function(data) {
+                        return data.created_at.replace('T', ' | ').replace('.000000Z', '')
+                    }
+                },
+                {
+                    data: null,
+                    render: function(data) {
+                        return data.updated_at.replace('T', ' | ').replace('.000000Z', '')
+                    }
+                },
                 {data:'id', visible: false, searchable: false,},
             ],
             buttons: [
@@ -536,7 +560,7 @@ export default {
                     this.profile.full_name = res.data.data.full_name
                     this.profile.gender = res.data.data.gender
                     this.profile.address = res.data.data.address
-                    this.profile.previewImage = 'http://recruitment.test/images/' + res.data.data.image + '?version=1'
+                    this.profile.previewImage = 'http://192.168.1.8:8000/images/' + res.data.data.image + '?version=1'
                     this.profile.cv = res.data.data.cv
                     
                     this.openProfileForm()
@@ -642,7 +666,7 @@ export default {
             this.profile.full_name = ''
             this.profile.gender = ''
             this.profile.address = ''
-            this.profile.previewImage = 'http://recruitment.test/images/default.jpg'
+            this.profile.previewImage = 'http://192.168.1.8:8000/images/default.jpg'
             this.profile.cv = ''
 
             this.photo = ''

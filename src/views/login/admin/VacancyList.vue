@@ -20,7 +20,7 @@
                                                 class="table table-hover display" 
                                                 :data="vacancy"
                                                 :columns="columns"
-                                                :options="{responsive: true, select: true, autoWidth: false,dom: 'Bflrtip', buttons: buttons, }"
+                                                :options="{responsive: true, select: 'single', autoWidth: false,dom: 'Bflrtip', buttons: buttons}"
                                                 ref="table"
                                             >
                                                 <thead>
@@ -30,6 +30,7 @@
                                                         <th>Nilai Minimal</th>
                                                         <th>Kuota</th>
                                                         <th>Status</th>
+                                                        <th>Dibuat pada</th>
                                                     </tr>
                                                 </thead>
                                             </DataTable>
@@ -161,6 +162,12 @@ export default {
                         } else {
                             return '<button class="btn btn-sm btn-danger"></button>'
                         }
+                    }
+                },
+                {
+                    data: null,
+                    render: function(data) {
+                        return data.updated_at.replace('T', ' | ').replace('.000000Z', '')
                     }
                 },
                 {data:'id', visible: false, searchable: false,},

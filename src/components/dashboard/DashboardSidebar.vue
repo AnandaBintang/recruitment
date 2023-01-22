@@ -18,16 +18,24 @@
                             <div class="nav-link-icon"><VueFeather type="briefcase"></VueFeather></div>
                             Lowongan
                         </router-link>
-                        <router-link class="nav-link" active-class="active" to="/application">
+                        <a class="nav-link" :class="{ collapsed: collapsedApp }" href="#" data-bs-toggle="collapse" data-bs-target="#collapseApp" aria-expanded="false" aria-controls="collapseApp">
                             <div class="nav-link-icon"><VueFeather type="archive"></VueFeather></div>
                             Lamaran
-                        </router-link>
-                        <a class="nav-link" :class="{ collapsed: collapsed }" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAccount" aria-expanded="false" aria-controls="collapseAccount">
+                            <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" :class="{ show: !collapsedApp }" id="collapseApp" data-bs-parent="#accordionSidenav">
+                            <nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
+                                <router-link class="nav-link" active-class="active" to="/application">Daftar Lamaran</router-link>
+                                <router-link class="nav-link" active-class="active" to="/history-app">Riwayat Lamaran</router-link>
+                                <router-link class="nav-link" active-class="active" to="/approved-app">Interviewer Diterima</router-link>
+                            </nav>
+                        </div>
+                        <a class="nav-link" :class="{ collapsed: collapsedAcc }" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAccount" aria-expanded="false" aria-controls="collapseAccount">
                             <div class="nav-link-icon"><VueFeather type="users"></VueFeather></div>
                             Akun
                             <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
-                        <div class="collapse" :class="{ show: !collapsed }" id="collapseAccount" data-bs-parent="#accordionSidenav">
+                        <div class="collapse" :class="{ show: !collapsedAcc }" id="collapseAccount" data-bs-parent="#accordionSidenav">
                             <nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
                                 <router-link class="nav-link" active-class="active" to="/account/admin">Admin</router-link>
                                 <router-link class="nav-link" active-class="active" to="/account/direktur">Direktur</router-link>
@@ -67,7 +75,8 @@ export default {
     data: function() {
         return {
             data: '',
-            collapsed: true,
+            collapsedAcc: true,
+            collapsedApp: true,
             route: this.$route.name,
         }
     },
@@ -77,7 +86,9 @@ export default {
             this.data = response.data.data
     
             if(this.route == 'Account') {
-                this.collapsed = false
+                this.collapsedAcc = false
+            } else if (this.route == 'Application' || this.route == 'HistoryApp' || this.route == 'ApprovedApp') {
+                this.collapsedApp = false
             }
         } catch {
             router.go()

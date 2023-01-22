@@ -27,7 +27,7 @@
                                         <tbody>
                                             <tr v-for="(statuses, index) in status" :key="statuses.id">
                                                 <td>{{ index + 1 }}</td>
-                                                <td>{{ statuses.created_at }}</td>
+                                                <td>{{ statuses.created_at.replace('T', ' | ').replace('.000000Z', '') }}</td>
                                                 <td>{{ statuses.position }}</td>
                                                 <td>{{ statuses.value }}</td>
                                                 <td>

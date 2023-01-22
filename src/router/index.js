@@ -57,6 +57,16 @@ const routes = [
         component: () => import('@/views/login/admin/ApplicationView.vue'),
     },
     {
+        path: "/history-app",
+        name: "HistoryApp",
+        component: () => import('@/views/login/admin/HistoryApp.vue'),
+    },
+    {
+        path: "/approved-app",
+        name: "ApprovedApp",
+        component: () => import('@/views/login/admin/ApprovedApp.vue'),
+    },
+    {
         path: "/account/:level",
         name: "Account",
         component: () => import('@/views/login/admin/AccountView.vue'),

@@ -11,7 +11,7 @@
                         </nav>
                         <hr class="mt-0 mb-4" />
                         <div class="card mb-4">
-                            <div class="card-header">Lamaran Pekerjaan</div>
+                            <div class="card-header">Riwayat Lamaran Pekerjaan</div>
                             <div class="card-body p-0 mb-3">
                                 <div class="row">
                                     <div class="col-lg-10 offset-lg-1">
@@ -28,14 +28,13 @@
                                                         <th>#</th>
                                                         <th>Pelamar</th>
                                                         <th>Posisi</th>
+                                                        <th>Status</th>
                                                         <th>Dibuat pada</th>
                                                     </tr>
                                                 </thead>
                                             </DataTable>
                                             <div class="mt-3 mb-3">
-                                                <button class="btn btn-danger btn-sm" type="submit" @click.prevent="reject()"><i class="fa fa-xmark"></i></button> |
-                                                <button class="btn btn-warning btn-sm" type="submit" @click.prevent="openInfo()"><i class="fa fa-info"></i></button> |
-                                                <button class="btn btn-success btn-sm" type="submit" @click.prevent="accept()"><i class="fa fa-check"></i></button>
+                                                <button class="btn btn-danger btn-sm" type="submit" @click.prevent="remove()"><i class="fa fa-trash"></i></button>
                                             </div>
                                         </div>
                                     </div>
@@ -82,7 +81,6 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 import router from '@/router'
 import { ref } from 'vue'
-import { Modal } from 'bootstrap/dist/js/bootstrap.bundle.min'
 import DataTable from "datatables.net-vue3"
 import DataTableLib from "datatables.net-bs5"
 import ButtonsHtml5 from "datatables.net-buttons/js/buttons.html5"
@@ -107,6 +105,13 @@ export default {
                 {data:'full_name'},
                 {data:'position'},
                 {
+                    data:null,
+                    className: 'dt-center',
+                    render: function(data) {
+                        return `<span class="badge bg-success text-light">${data.status}</span>`
+                    }
+                },
+                {
                     data: null,
                     render: function(data) {
                         return data.updated_at.replace('T', ' | ').replace('.000000Z', '')
@@ -117,37 +122,37 @@ export default {
             ],
             buttons: [
                 {
-                    title: `Data Pelamar Kerja`,
+                    title: `Data Riwayat Lamaran Kerja`,
                     extend: 'pdf',
                     exportOptions: {
-                        columns: [ 0, 1, 2 ]
+                        columns: [ 0, 1, 2, 3 ]
                     },
                     text: '<i class="fas fa-solid fa-file-pdf"></i> PDF',
                     className: 'btn btn-sm btn-danger'
                 },
                 {
-                    title: `Data Pelamar Kerja`,
+                    title: `Data Riwayat Lamaran Kerja`,
                     extend: 'csv',
                     exportOptions: {
-                        columns: [ 0, 1, 2 ]
+                        columns: [ 0, 1, 2, 3 ]
                     },
                     text: '<i class="fas fa-solid fa-file-csv"></i> CSV',
                     className: 'btn btn-sm btn-success'
                 },
                 {
-                    title: `Data Pelamar Kerja`,
+                    title: `Data Riwayat Lamaran Kerja`,
                     extend: 'print',
                     exportOptions: {
-                        columns: [ 0, 1, 2 ]
+                        columns: [ 0, 1, 2, 3 ]
                     },
                     text: '<i class="fas fa-solid fa-print"></i> Print',
                     className: 'btn btn-sm btn-dark'
                 },
                 {
-                    title: `Data Pelamar Kerja`,
+                    title: `Data Riwayat Lamaran Kerja`,
                     extend: 'copy',
                     exportOptions: {
-                        columns: [ 0, 1, 2 ]
+                        columns: [ 0, 1, 2, 3 ]
                     },
                     text: '<i class="fas fa-solid fa-copy"></i> Copy',
                     className: 'btn btn-sm btn-warning'
@@ -182,7 +187,7 @@ export default {
         });
 
         try{
-            const response = await axios.get('status')
+            const response = await axios.get('get-receive')
 
             this.applicant = response.data.data
 
@@ -200,41 +205,7 @@ export default {
         DataTable.use(ButtonsHtml5)
     },
     methods: {
-        async openInfo() {
-            let dt = this.$refs.table.dt();
-            let id = document.getElementById("idUser")
-            let app = document.getElementById("idApp")
-
-            dt.rows({ selected: true }).every(function () {
-                id.value = this.data().user_id;
-                app.value = this.data().id;
-            })
-
-            if(id.value) {
-                try {
-                    const response = await axios.get(`profile/${id.value}`)
-
-                    this.cv = 'http://192.168.1.8:8000/docs/' + response.data.data.cv + '?version=1'
-                    this.image = 'http://192.168.1.8:8000/images/' + response.data.data.image + '?version=1'
-
-                    const value = await axios.get(`get-val/${app.value}`)
-                    this.value = value.data.data.value
-
-                    const applicantInfo = new Modal('#applicantInfo', {
-                        keyboard: false
-                    })
-
-                    applicantInfo.show()
-                } catch {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Failed!",
-                        text: "Server error, silahkan muat ulang website!",
-                    })
-                }
-            }
-        },
-        async accept() {
+        async remove() {
             let dt = this.$refs.table.dt();
             let id = document.getElementById("idApp")
 
@@ -245,65 +216,8 @@ export default {
             if(id.value) {
                 try {
                     Swal.fire({
-                        title: 'Anda Yakin ingin menerima pelamar ini?',
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#22bb33',
-                        confirmButtonText: 'Yakin',
-                        cancelButtonColor: '#d33',
-                        reverseButtons: false,
-                        allowEscapeKey: false,
-                        allowOutsideClick: false,
-                        input: 'textarea',
-                        inputLabel: 'Message',
-                        inputPlaceholder: 'Type your message here... (optional)',
-                        inputAttributes: {
-                            'aria-label': 'Type your message here'
-                        },
-                        inputValue: 'Selamat anda telah diterima\nSilahkan datang ke kantor kami pada :\n\nAlamat : xxxxxx\nTanggal : xx-xx-xxxx\nPukul : xx.xx\n\nKami menunggu kedatangan anda!',
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            axios.post('accept-applicant', {
-                                id: id.value,
-                                message: result.value
-                            })
-                            .then(res => {
-                                Swal.fire({
-                                    icon: "success",
-                                    title: "Success!",
-                                    text: res.data.message,
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        this.render()
-                                    }
-                                })
-                            })
-                        } else {
-                            this.render()
-                        }
-                    })
-                } catch {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Failed!",
-                        text: "Server error, silahkan muat ulang website!",
-                    })
-                }
-            }
-        },
-        async reject() {
-            let dt = this.$refs.table.dt();
-            let id = document.getElementById("idApp")
-
-            dt.rows({ selected: true }).every(function () {
-                id.value = this.data().id;
-            })
-
-            if(id.value) {
-                try {
-                    Swal.fire({
-                    title: 'Anda Yakin ingin menolak pelamar ini?',
-                    icon: 'warning',
+                    title: 'Hapus Histori lamaran?',
+                    icon: 'question',
                     showCancelButton: true,
                     cancelButtonColor: '#22bb33',
                     confirmButtonText: 'Yakin',
@@ -313,7 +227,7 @@ export default {
                     allowOutsideClick: false
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            axios.post('reject-applicant', {id: id.value})
+                            axios.delete(`status/${id.value}`)
                             .then(res => {
                                 Swal.fire({
                                     icon: "success",
@@ -340,7 +254,7 @@ export default {
         },
         async render(){
             try{
-                const response = await axios.get('status')
+                const response = await axios.get('get-receive')
 
                 this.applicant = response.data.data
 
