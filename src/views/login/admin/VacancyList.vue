@@ -34,7 +34,7 @@
                                                     </tr>
                                                 </thead>
                                             </DataTable>
-                                            <div class="mt-3 mb-3">
+                                            <div class="mt-3 mb-3" v-if="level != 'hrd'">
                                                 <a class="btn btn-sm btn-primary" @click.prevent="openForm()"><i class="fa fa-plus"></i></a> |
                                                 <button class="btn btn-sm btn-danger" @click.prevent="remove()" title="Delete User"><i class="fa fa-trash"></i></button> |
                                                 <button class="btn btn-sm btn-warning" @click.prevent="edit()" title="Edit User"><i class="fa fa-pen"></i></button>
@@ -131,6 +131,7 @@ export default {
         return{
             vacancy: ref([]),
             id: null,
+            level: null,
             info: [{detail:''}],
             form: {
                 position: '',
@@ -239,8 +240,10 @@ export default {
         });
 
         try{
+            const level = await axios.get('get-token')
             const response = await axios.get('job')
-
+            
+            this.level = level.data.data.level
             this.vacancy = response.data.data
             
             Swal.close()

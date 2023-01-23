@@ -34,9 +34,9 @@
                                                 </thead>
                                             </DataTable>
                                             <div class="mt-3 mb-3">
-                                                <button class="btn btn-danger btn-sm" type="submit" @click.prevent="restore()"><i class="fa fa-rotate-left"></i></button> |
+                                                <button class="btn btn-danger btn-sm" type="submit" @click.prevent="restore()" v-if="level != 'direktur'"><i class="fa fa-rotate-left"></i></button> |
                                                 <button class="btn btn-warning btn-sm" type="submit" @click.prevent="openInfo()"><i class="fa fa-info"></i></button> |
-                                                <button class="btn btn-success btn-sm" type="submit" @click.prevent="accept()"><i class="fa fa-arrow-right"></i></button>
+                                                <button class="btn btn-success btn-sm" type="submit" @click.prevent="accept()" v-if="level != 'direktur'"><i class="fa fa-arrow-right"></i></button>
                                             </div>
                                         </div>
                                     </div>
@@ -100,6 +100,7 @@ export default {
         return{
             applicant: ref([]),
             cv: null,
+            level: null,
             image: null,
             value: null,
             columns:[
@@ -194,8 +195,10 @@ export default {
         });
 
         try{
+            const level = await axios.get('get-token')
             const response = await axios.get('get-app')
-
+            
+            this.level = level.data.data.level
             this.applicant = response.data.data
 
             Swal.close()
@@ -226,8 +229,8 @@ export default {
                 try {
                     const response = await axios.get(`profile/${id.value}`)
 
-                    this.cv = 'http://192.168.1.8:8000/docs/' + response.data.data.cv + '?version=1'
-                    this.image = 'http://192.168.1.8:8000/images/' + response.data.data.image + '?version=1'
+                    this.cv = 'http://recruitment.test/docs/' + response.data.data.cv + '?version=1'
+                    this.image = 'http://recruitment.test/images/' + response.data.data.image + '?version=1'
 
                     const value = await axios.get(`get-val/${app.value}`)
                     this.value = value.data.data.value

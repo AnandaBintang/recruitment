@@ -30,15 +30,15 @@
                                 <router-link class="nav-link" active-class="active" to="/approved-app">Interviewer Diterima</router-link>
                             </nav>
                         </div>
-                        <a class="nav-link" :class="{ collapsed: collapsedAcc }" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAccount" aria-expanded="false" aria-controls="collapseAccount">
+                        <a class="nav-link" :class="{ collapsed: collapsedAcc }" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAccount" aria-expanded="false" aria-controls="collapseAccount" v-if="data.level == 'admin' || data.level == 'direktur'">
                             <div class="nav-link-icon"><VueFeather type="users"></VueFeather></div>
                             Akun
                             <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
                         <div class="collapse" :class="{ show: !collapsedAcc }" id="collapseAccount" data-bs-parent="#accordionSidenav">
                             <nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
-                                <router-link class="nav-link" active-class="active" to="/account/admin">Admin</router-link>
-                                <router-link class="nav-link" active-class="active" to="/account/direktur">Direktur</router-link>
+                                <router-link class="nav-link" active-class="active" to="/account/admin" v-if="data.level == 'admin'">Admin</router-link>
+                                <router-link class="nav-link" active-class="active" to="/account/direktur" v-if="data.level == 'admin'">Direktur</router-link>
                                 <router-link class="nav-link" active-class="active" to="/account/hrd">HRD</router-link>
                                 <router-link class="nav-link" active-class="active" to="/account/user">User</router-link>
                             </nav>

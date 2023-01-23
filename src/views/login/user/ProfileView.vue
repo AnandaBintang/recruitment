@@ -92,7 +92,7 @@ export default {
             address: '',
             photo: '',
             pdf: '',
-            previewImage: 'http://192.168.1.8:8000/images/default.jpg',
+            previewImage: 'http://recruitment.test/images/default.jpg',
         }
     },
     async created() {
@@ -119,7 +119,7 @@ export default {
                 this.birthday = checkData.birthday
                 this.gender = checkData.gender
                 this.address = checkData.address
-                this.previewImage = 'http://192.168.1.8:8000/images/' + checkData.image + '?version=1'
+                this.previewImage = 'http://recruitment.test/images/' + checkData.image + '?version=1'
             }
 
             Swal.close()

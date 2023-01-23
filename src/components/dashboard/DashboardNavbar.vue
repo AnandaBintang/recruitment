@@ -38,7 +38,7 @@ export default {
     data: function() {
         return {
             data: '',
-            previewImage: 'http://192.168.1.8:8000/images/default.jpg',
+            previewImage: 'http://recruitment.test/images/default.jpg',
         }
     },
     async created() {
@@ -56,7 +56,7 @@ export default {
             checkData = profile.data.data
     
             if(checkData) {
-                this.previewImage = 'http://192.168.1.8:8000/images/' + checkData.image + '?version=1'
+                this.previewImage = 'http://recruitment.test/images/' + checkData.image + '?version=1'
             }
         } catch {
             console.clear()

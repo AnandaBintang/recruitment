@@ -45,7 +45,7 @@ export default {
                 }).then((result) => {
                 if (result.isConfirmed) {
                     let token = localStorage.getItem('token')
-                    axios.post('http://192.168.1.8:8000/api/auth/logout', {}, {
+                    axios.post('http://recruitment.test/api/auth/logout', {}, {
                         headers: {
                             'Authorization': `Bearer ${token}` 
                         }

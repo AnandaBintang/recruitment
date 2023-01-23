@@ -201,7 +201,7 @@ export default {
                 gender: '',
                 birthday: '',
                 address: '',
-                previewImage: 'http://192.168.1.8:8000/images/default.jpg',
+                previewImage: 'http://recruitment.test/images/default.jpg',
                 cv: '',
             },
             columns:[
@@ -560,7 +560,7 @@ export default {
                     this.profile.full_name = res.data.data.full_name
                     this.profile.gender = res.data.data.gender
                     this.profile.address = res.data.data.address
-                    this.profile.previewImage = 'http://192.168.1.8:8000/images/' + res.data.data.image + '?version=1'
+                    this.profile.previewImage = 'http://recruitment.test/images/' + res.data.data.image + '?version=1'
                     this.profile.cv = res.data.data.cv
                     
                     this.openProfileForm()
@@ -666,7 +666,7 @@ export default {
             this.profile.full_name = ''
             this.profile.gender = ''
             this.profile.address = ''
-            this.profile.previewImage = 'http://192.168.1.8:8000/images/default.jpg'
+            this.profile.previewImage = 'http://recruitment.test/images/default.jpg'
             this.profile.cv = ''
 
             this.photo = ''
